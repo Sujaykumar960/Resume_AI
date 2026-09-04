@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block title %}ResumeAI — Your AI Career Co-Pilot{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+  <!-- Animated background -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl animate-pulse" style="animation-delay:1s"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-900/10 rounded-full blur-3xl"></div>
+    <!-- Grid lines -->
+    <div class="absolute inset-0 opacity-5" style="background-image:linear-gradient(rgba(34,255,136,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(34,255,136,.3) 1px,transparent 1px);background-size:60px 60px"></div>
+  </div>
+
+  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 text-center">
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm mb-8 border border-neon/30 animate-fade-up">
+      <span class="w-2 h-2 bg-neon rounded-full animate-pulse"></span>
+      <span class="text-neon font-medium">Powered by Googlgffffffffffffffffe Gemini AI</span>
+    </div>
+
+    <!-- Headline -->
+    <h1 class="text-5xl sm:text-7xl font-black mb-6 leading-tight animate-fade-up" style="animation-delay:.1s">
+      Your AI<br/><span class="gradient-text">Career Co-Pilot</span>
+    </h1>
+    <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-12 animate-fade-up" style="animation-delay:.2s">
+      Upload your resume and get an instant AI-powered analysis — ATS score, job matches, skill gaps, and a personalized 3-year career roadmap.
+    </p>
+
+    <!-- Upload Card -->
+    <div class="max-w-2xl mx-auto animate-fade-up" style="animation-delay:.3s">
+      <form id="upload-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Drop Zone -->
+        <div id="drop-zone" class="glass rounded-2xl border-2 border-dashed border-slate-600 hover:border-neon/60 transition-all p-10 cursor-pointer mb-4 group animate-pulse-neon">
+          <input type="file" name="resume" id="resume-input" accept=".pdf" class="hidden" />
+          <div id="drop-content">
+            <div class="text-5xl mb-3 group-hover:scale-110 transition-transform">📄</div>
+            <p class="font-bold text-lg mb-1">Drop your resume heressssssssssss</p>
+            <p class="text-slate-400 text-sm">or <span class="text-neon underline cursor-pointer" onclick="document.getElementById('resume-input').click()">click to browse</span></p>
+            <p class="text-slate-500 text-xs mt-2">PDF only · Max 10MB</p>
+          </div>
+          <div id="file-selected" class="hidden">
+            <div class="text-4xl mb-2">✅</div>
+            <p id="file-name" class="font-bold text-neon"></p>
+            <p class="text-slate-400 text-sm mt-1">Ready to analyzeaaaggggg</p>
+          </div>
+        </div>
+
+        <!-- Job Description -->
+        <div class="mb-4">
+          <button type="button" id="jd-toggle" class="text-sm text-slate-400 hover:text-neon transition-colors flex items-center gap-1 mx-auto">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Job Description (optional — improves accuracy)
+          </button>
+          <div id="jd-area" class="hidden mt-3">
+            <textarea name="job_description" rows="4" placeholder="Paste the job description here…" class="w-full glass rounded-xl p-4 text-sm text-slate-200 placeholder-slate-500 border border-slate-700 focus:border-neon/50 focus:outline-none resize-none transition-colors"></textarea>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" id="submit-btn" class="btn-primary w-full py-4 rounded-xl text-lg flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span id="btn-text">🚀 Analyze My Resume</span>
+          <span id="btn-loader" class="hidden">
+            <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+            Analyzing with Gemini…
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Trust Badges -->
+    <div class="flex flex-wrap justify-center gap-4 mt-10 animate-fade-up" style="animation-delay:.4s">
+      {% for badge in badges %}{% endfor %}
+      <div class="glass rounded-full px-4 py-2 text-xs flex items-center gap-2 border border-slate-700">
+        <span>✨</span><span class="text-slate-300">Gemini Powered</span>
+      </div>
+      <div class="glass rounded-full px-4 py-2 text-xs flex items-center gap-2 border border-slate-700">
+        <span>🔒</span><span class="text-slate-300">100% Privateaaaaaaa</span>
+      </div>
+      <div class="glass rounded-full px-4 py-2 text-xs flex items-center gap-2 border border-slate-700">
+        <span>👥</span><span class="text-slate-300">Used by 10k+ Professionalsabcd</span>
+      </div>
+      <div class="glass rounded-full px-4 py-2 text-xs flex items-center gap-2 border border-slate-700">
+        <span>⚡</span><span class="text-slate-300">Results in 30 seconds</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="py-24 px-4 sm:px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-black mb-4">How It <span class="gradient-text">Works</span></h2>
+      <p class="text-slate-400 max-w-xl mx-auto">Four simple steps to transform your career trajectory</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for step in steps %}{% endfor %}
+      {% for item in how_steps %}{% endfor %}
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover text-center">
+        <div class="text-4xl mb-4">📤</div>
+        <div class="text-neon font-black text-sm mb-2">STEP 01</div>
+        <h3 class="font-bold text-lg mb-2">Upload Resume</h3>
+        <p class="text-slate-400 text-sm">Drag & drop your PDF resume. We accept any format up to 10MB.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover text-center">
+        <div class="text-4xl mb-4">🤖</div>
+        <div class="text-neon font-black text-sm mb-2">STEP 02</div>
+        <h3 class="font-bold text-lg mb-2">AI Analysis</h3>
+        <p class="text-slate-400 text-sm">Gemini AI reads every line, scores your resume, and identifies gaps.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover text-center">
+        <div class="text-4xl mb-4">📊</div>
+        <div class="text-neon font-black text-sm mb-2">STEP 03</div>
+        <h3 class="font-bold text-lg mb-2">Get Insights</h3>
+        <p class="text-slate-400 text-sm">Receive a detailed breakdown: ATS score, job matches, skill gaps & roadmap.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover text-center">
+        <div class="text-4xl mb-4">🚀</div>
+        <div class="text-neon font-black text-sm mb-2">STEP 04</div>
+        <h3 class="font-bold text-lg mb-2">Level Up</h3>
+        <p class="text-slate-400 text-sm">Chat with your AI coach, apply improvements, and land your dream job.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Grid -->
+<section class="py-16 px-4 sm:px-6 bg-slate-900/50">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-black mb-4">Everything You <span class="gradient-text">Need</span></h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover">
+        <div class="text-3xl mb-3">🎯</div>
+        <h3 class="font-bold mb-2">ATS Score & Optimization</h3>
+        <p class="text-slate-400 text-sm">Know exactly how applicant tracking systems see your resume and fix it.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover">
+        <div class="text-3xl mb-3">💼</div>
+        <h3 class="font-bold mb-2">Top Job Matches</h3>
+        <p class="text-slate-400 text-sm">Discover the 5 best-fit roles with salary ranges in India & globally.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover">
+        <div class="text-3xl mb-3">📈</div>
+        <h3 class="font-bold mb-2">3-Year Career Roadmap</h3>
+        <p class="text-slate-400 text-sm">A personalized timeline with milestones and actionable steps.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover">
+        <div class="text-3xl mb-3">🧠</div>
+        <h3 class="font-bold mb-2">Skills Gap Analysis</h3>
+        <p class="text-slate-400 text-sm">Know exactly what to learn next with curated course recommendations.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover">
+        <div class="text-3xl mb-3">💬</div>
+        <h3 class="font-bold mb-2">AI Career Coach Chat</h3>
+        <p class="text-slate-400 text-sm">Ask anything — mock interviews, LinkedIn posts, salary negotiation tips.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 border border-slate-700 card-hover">
+        <div class="text-3xl mb-3">✍️</div>
+        <h3 class="font-bold mb-2">Improved Summary</h3>
+        <p class="text-slate-400 text-sm">Get a polished professional summary ready to copy-paste instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-10 px-4 border-t border-slate-800 text-center text-slate-500 text-sm">
+  <div class="flex justify-center items-center gap-2 mb-3">
+    <span class="text-xl">🤖</span>
+    <span class="gradient-text font-black text-lg">ResumeAI</span>
+  </div>
+  <p>Built with ❤️ using Django + Google Gemini AI</p>
+  <p class="mt-1 text-xs text-slate-600">Your resume data is never stored permanently. Privacy first.</p>
+</footer>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="fixed inset-0 bg-slate-950/95 z-50 hidden flex-col items-center justify-center">
+  <div class="text-center">
+    <div class="text-6xl mb-6 animate-bounce">🤖</div>
+    <h2 class="text-2xl font-black gradient-text mb-3">Analyzing Your Resume…</h2>
+    <p class="text-slate-400 mb-8">Gemini AI is reading every line of your resume</p>
+    <div class="w-64 h-2 bg-slate-800 rounded-full overflow-hidden mx-auto">
+      <div id="progress-bar" class="h-full bg-gradient-to-r from-neon to-purple-500 rounded-full transition-all duration-500" style="width:0%"></div>
+    </div>
+    <div id="progress-steps" class="mt-4 text-sm text-slate-400 space-y-1">
+      <p id="step-1" class="opacity-30">📄 Reading resume content…</p>
+      <p id="step-2" class="opacity-30">🔍 Scoring ATS compatibility…</p>
+      <p id="step-3" class="opacity-30">💼 Matching job profiles…</p>
+      <p id="step-4" class="opacity-30">🗺️ Building career roadmap…</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const dropZone = document.getElementById('drop-zone');
+  const resumeInput = document.getElementById('resume-input');
+  const dropContent = document.getElementById('drop-content');
+  const fileSelected = document.getElementById('file-selected');
+  const fileName = document.getElementById('file-name');
+  const jdToggle = document.getElementById('jd-toggle');
+  const jdArea = document.getElementById('jd-area');
+  const form = document.getElementById('upload-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const btnText = document.getElementById('btn-text');
+  const btnLoader = document.getElementById('btn-loader');
+  const loadingOverlay = document.getElementById('loading-overlay');
+  const progressBar = document.getElementById('progress-bar');
+
+  // Drag & drop
+  dropZone.addEventListener('click', () => resumeInput.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-neon'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-neon'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('border-neon');
+    const file = e.dataTransfer.files[0];
+    if (file) setFile(file);
+  });
+  resumeInput.addEventListener('change', () => { if (resumeInput.files[0]) setFile(resumeInput.files[0]); });
+
+  function setFile(file) {
+    if (file.type !== 'application/pdf') { showToast('Only PDF files are accepted.', 'error'); return; }
+    if (file.size > 10 * 1024 * 1024) { showToast('File must be under 10MB.', 'error'); return; }
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    resumeInput.files = dt.files;
+    fileName.textContent = file.name;
+    dropContent.classList.add('hidden');
+    fileSelected.classList.remove('hidden');
+    dropZone.classList.add('border-neon/60');
+  }
+
+  jdToggle.addEventListener('click', () => jdArea.classList.toggle('hidden'));
+
+  // Animated progress
+  function animateProgress() {
+    const steps = [
+      { id: 'step-1', pct: 20, delay: 0 },
+      { id: 'step-2', pct: 45, delay: 1200 },
+      { id: 'step-3', pct: 70, delay: 2800 },
+      { id: 'step-4', pct: 90, delay: 4500 },
+    ];
+    steps.forEach(s => {
+      setTimeout(() => {
+        progressBar.style.width = s.pct + '%';
+        document.getElementById(s.id).classList.remove('opacity-30');
+        document.getElementById(s.id).classList.add('text-neon');
+      }, s.delay);
+    });
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!resumeInput.files[0]) { showToast('Please select a PDF resume first.', 'error'); return; }
+
+    btnText.classList.add('hidden');
+    btnLoader.classList.remove('hidden');
+    submitBtn.disabled = true;
+    loadingOverlay.classList.remove('hidden');
+    loadingOverlay.classList.add('flex');
+    animateProgress();
+
+    const fd = new FormData(form);
+    try {
+      const res = await fetch('/analyze/', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) { throw new Error(data.error || 'Analysis failed.'); }
+      progressBar.style.width = '100%';
+      setTimeout(() => { window.location.href = `/results/${data.id}/`; }, 500);
+    } catch (err) {
+      loadingOverlay.classList.add('hidden');
+      loadingOverlay.classList.remove('flex');
+      btnText.classList.remove('hidden');
+      btnLoader.classList.add('hidden');
+      submitBtn.disabled = false;
+      showToast(err.message, 'error');
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeAI - AI-Powered Resume Analyzer & Career Coach</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --neon-green: #22ff88;
+            --purple: #a855f7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2322ff88" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,133.3C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .neon-green {
+            color: var(--neon-green);
+        }
+        
+        .neon-border {
+            border-color: var(--neon-green);
+        }
+        
+        .purple-accent {
+            color: var(--purple);
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(34, 255, 136, 0.3);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(34, 255, 136, 0.2);
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .slide-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease 0.2s;
+        }
+        
+        .slide-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s ease 0.4s;
+        }
+        
+        .scale-in.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .counter {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--neon-green);
+        }
+        
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--neon-green), var(--purple));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: particle-float 20s infinite linear;
+        }
+        
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--neon-green);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-green), #20cc6f);
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(34, 255, 136, 0.3);
+        }
+        
+        .timeline-step {
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .timeline-step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .timeline-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 30px;
+            width: 2px;
+            height: calc(100% + 20px);
+            background: rgba(34, 255, 136, 0.3);
+        }
+        .beton {
+            
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-effect px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-2xl font-bold flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-r from-neon-green to-purple rounded-lg flex items-center justify-center">
+                    <span class="text-gray-900 font-bold text-sm"><img src="/media/logo.png" alt="logo_Img"></span>
+                </div>
+                Resume<span class="neon-green" style="margin-right: 13px;">AI</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="nav-link", style="font-size: 15px;">Home</a>
+                <a href="#features" class="nav-link", style="font-size: 15px;">Features</a>
+                <a href="#how-it-works" class="nav-link", style="font-size: 15px; margin-left: 15px;">How It Works</a>
+                <a href="#testimonials" class="nav-link", style="font-size: 15px;">Testimonials</a>
+                <a href="#pricing" class="nav-link", style="font-size: 15px;">Pricing</a>
+                <a href="#" class="nav-link neon-green font-bold", style="font-size:15px; color:white">AI Mock Interviews</a>
+                <a href="#" class="nav-link neon-green font-bold", style="font-size:15px; color:white">Jobs</a>
+            </div>
+            <div class="flex space-x-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="bg-neon-green text-black px-6 py-2 rounded-lg font-semibold hover:bg-neon-green/90 transition-colors" style="color: white;">Dashboard</a>
+                    {% comment %} <a href="{% url 'accounts:logout' %}" class="nav-link", style="margin-left: 3px; margin-top:7px;">Logout</a> {% endcomment %}
+                    <form action="{% url 'accounts:logout' %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link" style="margin-left: 3px; margin-top:7px;">
+                            Logout
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-link", style="margin-left: 3px;">Login</a>
+                    <a href="{% url 'accounts:signup' %}" class="btn-primary" style="padding: 6px 14px; font-size: 12px;">Get Started Free</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen hero-bg flex items-center relative pt-20">
+        <div class="particles" id="particles"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Left: Person Image and Content -->
+                <div class="relative fade-in">
+                    <!-- Person Image Placeholder -->
+                    <div class="relative mb-8">
+                        <div class="w-full h-96 md:h-[500px] bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl shadow-2xl floating overflow-hidden">
+                            <img src="https://i.pinimg.com/736x/f3/e7/85/f3e785afb0a0b3a1e7c1cf1670f1e197.jpg" 
+                                 alt="Professional woman" 
+                                 class="w-full h-full object-cover rounded-2xl"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="w-full h-full flex items-center justify-center" style="display: none;">
+                                <div class="text-center text-white">
+                                    <div class="w-24 h-24 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
+                                        <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-lg font-semibold">Professional Profile</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Decorative elements -->
+                        <div class="absolute -top-4 -left-4 w-20 h-20 bg-neon-green/20 rounded-full blur-xl"></div>
+                        <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-purple-500/20 rounded-full blur-xl"></div>
+                    </div>
+                    
+                    <!-- Trust Indicators -->
+                    <div class="glass-effect rounded-2xl p-6 mb-8">
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="flex items-center justify-center mb-2">
+                                    <svg class="w-5 h-5 text-neon-green mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-xs text-gray-400">AI Powered</span>
+                                </div>
+                                <div class="text-sm font-bold text-neon-green">Resume Insight System</div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-center mb-2">
+                                    <svg class="w-5 h-5 text-neon-green mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-xs text-gray-400">Security</span>
+                                </div>
+                                <div class="text-sm font-bold text-neon-green">100% Private</div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-center mb-2">
+                                    <svg class="w-5 h-5 text-neon-green mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                    </svg>
+                                    <span class="text-xs text-gray-400">Users</span>
+                                </div>
+                                <div class="text-sm font-bold text-neon-green">10,000+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right: Main Content -->
+                <div class="fade-in text-center md:text-left">
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                        Unlock Your Dream Career<br>
+                        with <span class="neon-green">AI</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                        Upload your resume once. Get personalized job matches, instant improvements, career roadmaps, and 24/7 AI coaching.
+                    </p>
+                    <div class="mb-12">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'dashboard' %}" class="btn-primary text-lg px-8 py-4 text-lg font-semibold">
+                                Get Started
+                            </a>
+                        {% else %}
+                            <a href="{% url 'accounts:signup' %}" class="btn-primary text-lg px-8 py-4 text-lg font-semibold">
+                                Get Started
+                            </a>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Company Logos Section -->
+                    <div class="glass-effect rounded-2xl p-6">
+                        <p class="text-sm text-gray-400 mb-4 text-center">Helping professionals get hired at top companies</p>
+                        <div class="flex flex-wrap justify-center items-center gap-6">
+                            <div class="flex items-center justify-center w-20 h-12 bg-gray-800 rounded-lg">
+                                <span class="text-blue-400 font-bold text-sm">Google</span>
+                            </div>
+                            <div class="flex items-center justify-center w-20 h-12 bg-gray-800 rounded-lg">
+                                <span class="text-green-400 font-bold text-sm">Microsoft</span>
+                            </div>
+                            <div class="flex items-center justify-center w-20 h-12 bg-gray-800 rounded-lg">
+                                <span class="text-orange-400 font-bold text-sm">Amazon</span>
+                            </div>
+                            <div class="flex items-center justify-center w-20 h-12 bg-gray-800 rounded-lg">
+                                <span class="text-blue-300 font-bold text-sm">LinkedIn</span>
+                            </div>
+                            <div class="flex items-center justify-center w-20 h-12 bg-gray-800 rounded-lg">
+                                <span class="text-purple-400 font-bold text-sm">Grok</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    What You Can <span class="neon-green">Do</span>
+                </h2>
+                <p class="text-xl text-gray-400">Powerful AI-driven features to accelerate your career</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card-hover glass-effect rounded-2xl p-8 slide-up group">
+                    <div class="feature-icon group-hover:scale-110 transition-transform">📊</div>
+                    <h3 class="text-2xl font-bold mb-4">AI Resume Analysis</h3>
+                    <p class="text-gray-400 mb-4">Get a 100-point score + detailed feedback on your resume's strengths and weaknesses.</p>
+                    <div class="space-y-2 text-sm text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            ATS optimization check
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Keyword analysis
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Formatting recommendations
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover glass-effect rounded-2xl p-8 slide-up group" style="animation-delay: 0.1s">
+                    <div class="feature-icon group-hover:scale-110 transition-transform">🎯</div>
+                    <h3 class="text-2xl font-bold mb-4">Smart Job Matching</h3>
+                    <p class="text-gray-400 mb-4">Top 5 perfect roles with salary estimates based on your skills and experience.</p>
+                    <div class="space-y-2 text-sm text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Personalized job recommendations
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Salary range predictions
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Company insights
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover glass-effect rounded-2xl p-8 slide-up group" style="animation-delay: 0.2s">
+                    <div class="feature-icon group-hover:scale-110 transition-transform">✨</div>
+                    <h3 class="text-2xl font-bold mb-4">Instant Improvements</h3>
+                    <p class="text-gray-400 mb-4">Before/After bullet points + ATS optimization to make your resume stand out.</p>
+                    <div class="space-y-2 text-sm text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Real-time suggestions
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Professional rewording
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Impact-driven language
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover glass-effect rounded-2xl p-8 slide-up group" style="animation-delay: 0.3s">
+                    <div class="feature-icon group-hover:scale-110 transition-transform">🗺️</div>
+                    <h3 class="text-2xl font-bold mb-4">Skills Gap & Roadmap</h3>
+                    <p class="text-gray-400 mb-4">Personalized 3-year career plan with skill development recommendations.</p>
+                    <div class="space-y-2 text-sm text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Skills assessment
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Learning resources
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Career progression path
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover glass-effect rounded-2xl p-8 slide-up group" style="animation-delay: 0.4s">
+                    <div class="feature-icon group-hover:scale-110 transition-transform">💬</div>
+                    <h3 class="text-2xl font-bold mb-4">AI Chatbot Coach</h3>
+                    <p class="text-gray-400 mb-4">Ask anything about your career anytime - interview prep, salary negotiation, and more.</p>
+                    <div class="space-y-2 text-sm text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            24/7 availability
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Personalized advice
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Industry insights
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover glass-effect rounded-2xl p-8 slide-up group" style="animation-delay: 0.5s">
+                    <div class="feature-icon group-hover:scale-110 transition-transform">📈</div>
+                    <h3 class="text-2xl font-bold mb-4">Progress Tracking</h3>
+                    <p class="text-gray-400 mb-4">Monitor your resume improvements and career advancement over time.</p>
+                    <div class="space-y-2 text-sm text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Version history
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Score improvements
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-neon-green" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Achievement badges
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    How It <span class="neon-green">Works</span>
+                </h2>
+                <p class="text-xl text-gray-400">Get started in minutes, transform your career forever</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="space-y-12">
+                    <div class="timeline-step scale-in">
+                        <h3 class="text-2xl font-bold mb-2">Upload Your Resume</h3>
+                        <p class="text-gray-400">Simply upload your existing resume in PDF format. Our AI will analyze it instantly.</p>
+                    </div>
+                    
+                    <div class="timeline-step scale-in" style="animation-delay: 0.2s">
+                        <h3 class="text-2xl font-bold mb-2">Get AI Analysis</h3>
+                        <p class="text-gray-400">Receive a comprehensive analysis with score, improvements, and job matches within seconds.</p>
+                    </div>
+                    
+                    <div class="timeline-step scale-in" style="animation-delay: 0.4s">
+                        <h3 class="text-2xl font-bold mb-2">Apply Improvements</h3>
+                        <p class="text-gray-400">Follow our AI-powered suggestions to enhance your resume and boost your chances.</p>
+                    </div>
+                    
+                    <div class="timeline-step scale-in" style="animation-delay: 0.6s">
+                        <h3 class="text-2xl font-bold mb-2">Land Your Dream Job</h3>
+                        <p class="text-gray-400">Use your optimized resume to apply for jobs with confidence and get hired faster.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    Success <span class="neon-green">Stories</span>
+                </h2>
+                <p class="text-xl text-gray-400">Join thousands who've transformed their careers</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="testimonial-card rounded-2xl p-8 slide-up">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-neon-green to-purple rounded-full flex items-center justify-center font-bold">
+                            JD
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold">John Davis</div>
+                            <div class="text-sm text-gray-400">Software Engineer</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-4">
+                        <span class="text-neon-green">★★★★★</span>
+                    </div>
+                    <p class="text-gray-300">"ResumeAI helped me transform my resume from a 65 to a 92 score. I landed 3 interviews within a week!"</p>
+                </div>
+                
+                <div class="testimonial-card rounded-2xl p-8 slide-up" style="animation-delay: 0.1s">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-neon-green to-purple rounded-full flex items-center justify-center font-bold">
+                            SC
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold">Sarah Chen</div>
+                            <div class="text-sm text-gray-400">Product Manager</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-4">
+                        <span class="text-neon-green">★★★★★</span>
+                    </div>
+                    <p class="text-gray-300">"The AI coach helped me prepare for interviews perfectly. Got my dream job with a 40% salary increase!"</p>
+                </div>
+                
+                <div class="testimonial-card rounded-2xl p-8 slide-up" style="animation-delay: 0.2s">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-neon-green to-purple rounded-full flex items-center justify-center font-bold">
+                            MR
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold">Mike Rodriguez</div>
+                            <div class="text-sm text-gray-400">Data Scientist</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-4">
+                        <span class="text-neon-green">★★★★★</span>
+                    </div>
+                    <p class="text-gray-300">"The job matching feature was spot-on. Found opportunities I never would have discovered on my own."</p>
+                </div>
+                
+                <div class="testimonial-card rounded-2xl p-8 slide-up" style="animation-delay: 0.3s">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-neon-green to-purple rounded-full flex items-center justify-center font-bold">
+                            EK
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold">Emily Kim</div>
+                            <div class="text-sm text-gray-400">UX Designer</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-4">
+                        <span class="text-neon-green">★★★★★</span>
+                    </div>
+                    <p class="text-gray-300">"The skills gap analysis showed me exactly what I needed to learn. Now I'm qualified for senior roles!"</p>
+                </div>
+                
+                <div class="testimonial-card rounded-2xl p-8 slide-up" style="animation-delay: 0.4s">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-neon-green to-purple rounded-full flex items-center justify-center font-bold">
+                            AJ
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold">Alex Johnson</div>
+                            <div class="text-sm text-gray-400">Marketing Manager</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-4">
+                        <span class="text-neon-green">★★★★★</span>
+                    </div>
+                    <p class="text-gray-300">"ResumeAI's ATS optimization got my resume past the automated filters. Game changer!"</p>
+                </div>
+                
+                <div class="testimonial-card rounded-2xl p-8 slide-up" style="animation-delay: 0.5s">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-neon-green to-purple rounded-full flex items-center justify-center font-bold">
+                            LP
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold">Lisa Park</div>
+                            <div class="text-sm text-gray-400">Sales Director</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-4">
+                        <span class="text-neon-green">★★★★★</span>
+                    </div>
+                    <p class="text-gray-300">"The career roadmap feature helped me plan my next 3 years. Just got promoted!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    Why Choose <span class="neon-green">ResumeAI</span>
+                </h2>
+                <p class="text-xl text-gray-400">Proven results that speak for themselves</p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center scale-in">
+                    <div class="counter" data-target="95">0</div>
+                    <div class="text-xl font-bold mb-2">% Users Improved Score</div>
+                    <p class="text-gray-400">See measurable improvement in resume quality</p>
+                </div>
+                
+                <div class="text-center scale-in" style="animation-delay: 0.2s">
+                    <div class="counter" data-target="10">0</div>
+                    <div class="text-xl font-bold mb-2">x Faster Job Search</div>
+                    <p class="text-gray-400">Land interviews 10 times faster</p>
+                </div>
+                
+                <div class="text-center scale-in" style="animation-delay: 0.4s">
+                    <div class="counter" data-target="10000">0</div>
+                    <div class="text-xl font-bold mb-2">+ Professionals</div>
+                    <p class="text-gray-400">Trust ResumeAI for their career</p>
+                </div>
+                
+                <div class="text-center scale-in" style="animation-delay: 0.6s">
+                    <div class="counter" data-target="24">0</div>
+                    <div class="text-xl font-bold mb-2">/7 AI Support</div>
+                    <p class="text-gray-400">Always here to help you succeed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="text-2xl font-bold mb-4">
+                        Resume<span class="neon-green">AI</span>
+                    </div>
+                    <p class="text-gray-400">AI-powered resume analysis and career coaching for professionals worldwide.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#features" class="hover:text-neon-green">Features</a></li>
+                        <li><a href="#how-it-works" class="hover:text-neon-green">How It Works</a></li>
+                        <li><a href="#pricing" class="hover:text-neon-green">Pricing</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-neon-green">About</a></li>
+                        <li><a href="#" class="hover:text-neon-green">Blog</a></li>
+                        <li><a href="#" class="hover:text-neon-green">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-neon-green">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-neon-green">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-neon-green">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400">© 2024 ResumeAI. All rights reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-neon-green">LinkedIn</a>
+                    <a href="#" class="text-gray-400 hover:text-neon-green">Twitter</a>
+                    <a href="#" class="text-gray-400 hover:text-neon-green">Facebook</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.fade-in, .slide-up, .scale-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Counter animation
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = parseInt(counter.getAttribute('data-target'));
+                    const duration = 2000;
+                    const increment = target / (duration / 16);
+                    let current = 0;
+
+                    const updateCounter = () => {
+                        current += increment;
+                        if (current < target) {
+                            counter.textContent = Math.ceil(current);
+                            requestAnimationFrame(updateCounter);
+                        } else {
+                            counter.textContent = target;
+                        }
+                    };
+
+                    updateCounter();
+                    counterObserver.unobserve(counter);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(counter => {
+            counterObserver.observe(counter);
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Generate particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(10, 10, 10, 0.95)';
+            } else {
+                nav.style.background = 'rgba(255, 255, 255, 0.05)';
+            }
+        });
+    </script>
+</body>
+</html>

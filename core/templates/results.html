@@ -1,0 +1,740 @@
+{% extends "base.html" %}
+{% block title %}Results — {{ analysis.filename }} | ResumeAI{% endblock %}
+
+{% block extra_head %}
+<style>
+  body { background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); }
+  .score-ring { transform: rotate(-90deg); }
+  .score-ring circle { transition: stroke-dashoffset 1.5s ease; }
+  .tag { display:inline-block; padding:2px 10px; border-radius:9999px; font-size:.75rem; font-weight:600; }
+  .roadmap-line { position:relative; }
+  .roadmap-line::before { content:''; position:absolute; left:19px; top:40px; bottom:-20px; width:2px; background:linear-gradient(to bottom,#22ff88,#a855f7); }
+  @keyframes confetti-fall { 0%{transform:translateY(-100px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+  .confetti-piece { position:fixed; width:10px; height:10px; top:-20px; animation:confetti-fall 3s ease-in forwards; z-index:9999; border-radius:2px; }
+  @keyframes fade-in { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+  .animate-fade-in { animation:fade-in 0.6s ease-out forwards; }
+  .glass { background: rgba(15, 15, 35, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(168, 85, 247, 0.2); }
+  .glass-card { background: rgba(20, 20, 40, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(168, 85, 247, 0.3); }
+  .glass:hover { border-color: rgba(168, 85, 247, 0.5); box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2); }
+  .gradient-text { background: linear-gradient(135deg, #22ff88, #a855f7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .neon-glow { text-shadow: 0 0 10px #22ff88, 0 0 20px #22ff88, 0 0 30px #22ff88; }
+  .card-hover { transition: all 0.3s ease; }
+  .card-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(168, 85, 247, 0.3); }
+  .company-logo { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: white; }
+  .google-bg { background: linear-gradient(135deg, #4285f4, #34a853, #fbbc05, #ea4335); }
+  .microsoft-bg { background: linear-gradient(135deg, #00a4ef, #7fba00, #ffb900, #f25022); }
+  .atlassian-bg { background: linear-gradient(135deg, #0052cc, #2684ff, #00b8d9); }
+  .swiggy-bg { background: linear-gradient(135deg, #fc8019, #ff6b35); }
+  .stripe-bg { background: linear-gradient(135deg, #635bff, #4242f0); }
+  .zomato-bg { background: linear-gradient(135deg, #e23744, #c71f37); }
+  .coinbase-bg { background: linear-gradient(135deg, #0052ff, #1652f0); }
+  .ola-bg { background: linear-gradient(135deg, #ffc107, #ff9800); }
+  .default-bg { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .job-card { position: relative; overflow: hidden; }
+  .job-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.2), transparent); transition: left 0.5s; }
+  .job-card:hover::before { left: 100%; }
+  .pulse-dot { animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } }
+  .floating { animation: floating 3s ease-in-out infinite; }
+  @keyframes floating { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+  
+  /* Print Styles */
+  @media print {
+    body { 
+      background: white !important; 
+      color: black !important;
+      font-size: 12pt;
+      line-height: 1.4;
+    }
+    
+    .max-w-6xl { max-width: none !important; }
+    .glass, .glass-card { 
+      background: white !important; 
+      border: 1px solid #ccc !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+    }
+    
+    .gradient-text, .neon-glow { 
+      background: none !important; 
+      -webkit-text-fill-color: black !important;
+      text-shadow: none !important;
+      color: black !important;
+    }
+    
+    .text-neon, .text-purple-500, .text-blue-500, .text-green-500, 
+    .text-yellow-400, .text-red-400, .text-pink-500, .text-cyan-400,
+    .text-orange-500, .text-emerald-400 {
+      color: black !important;
+    }
+    
+    .text-slate-300, .text-slate-400, .text-slate-500 {
+      color: #333 !important;
+    }
+    
+    .text-white { color: black !important; }
+    
+    .bg-gradient-to-br, .bg-gradient-to-r {
+      background: none !important;
+      background-color: white !important;
+    }
+    
+    .border-slate-700, .border-purple-500, .border-neon {
+      border-color: #ccc !important;
+    }
+    
+    .hover\:border-neon:hover, .hover\:border-purple-500:hover {
+      border-color: #ccc !important;
+    }
+    
+    .hover\:scale-105:hover, .hover\:scale-110:hover {
+      transform: none !important;
+    }
+    
+    .card-hover:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    
+    .floating, .animate-fade-in, .pulse-dot, .confetti-piece {
+      animation: none !important;
+      display: none !important;
+    }
+    
+    .score-ring { transform: none !important; }
+    
+    /* Hide interactive elements */
+    button, .fixed, #chat-bubble, #chat-panel {
+      display: none !important;
+    }
+    
+    /* Ensure proper page breaks */
+    .glass { 
+      page-break-inside: avoid;
+      margin-bottom: 1rem;
+    }
+    
+    .grid { page-break-inside: auto; }
+    
+    /* Adjust spacing for print */
+    .pt-24 { padding-top: 1rem !important; }
+    .pb-16 { padding-bottom: 1rem !important; }
+    .mb-12 { margin-bottom: 1rem !important; }
+    .mb-10 { margin-bottom: 1rem !important; }
+    .mb-8 { margin-bottom: 0.8rem !important; }
+    .mb-6 { margin-bottom: 0.6rem !important; }
+    .gap-8 { gap: 0.8rem !important; }
+    .gap-6 { gap: 0.6rem !important; }
+    .gap-4 { gap: 0.4rem !important; }
+    .gap-3 { gap: 0.3rem !important; }
+    .p-8 { padding: 0.8rem !important; }
+    .p-7 { padding: 0.7rem !important; }
+    .p-6 { padding: 0.6rem !important; }
+    .p-4 { padding: 0.4rem !important; }
+    .px-4 { padding-left: 0.4rem !important; padding-right: 0.4rem !important; }
+    .py-3 { padding-top: 0.3rem !important; padding-bottom: 0.3rem !important; }
+    
+    /* Ensure text readability */
+    .text-4xl { font-size: 24pt !important; }
+    .text-xl { font-size: 16pt !important; }
+    .text-lg { font-size: 14pt !important; }
+    .text-sm { font-size: 10pt !important; }
+    .text-xs { font-size: 9pt !important; }
+    
+    /* Fix score display */
+    .w-44, .w-16 { width: 60px !important; height: 60px !important; }
+    .text-5xl { font-size: 18pt !important; }
+    
+    /* Ensure proper layout */
+    .flex { display: flex !important; }
+    .grid { display: grid !important; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-12 gap-6">
+    <div class="flex items-center gap-4">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-neon to-purple-500 flex items-center justify-center floating">
+        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h2a1 1 0 100-2 2 2 0 00-2 2v11a2 2 0 104 0V5z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div>
+        <a href="/" class="text-slate-400 hover:text-neon text-sm flex items-center gap-1 mb-2 transition-colors">
+          ← Analyze another resume
+        </a>
+        <h1 class="text-4xl font-black gradient-text">Analysis <span class="text-white">Results</span></h1>
+        <div class="flex items-center gap-3 mt-2">
+          <span class="text-slate-400 text-sm">{{ analysis.filename }}</span>
+          <span class="text-neon text-xs pulse-dot">●</span>
+          <span class="text-slate-400 text-sm">{{ analysis.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="shareResults()" class="glass border border-slate-700 hover:border-neon/40 px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 card-hover">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+        </svg>
+        Share
+      </button>
+      <button onclick="window.print()" class="glass border border-slate-700 hover:border-neon/40 px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 card-hover">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+        </svg>
+        Print
+      </button>
+    </div>
+  </div>
+
+  <!-- Score Overview -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+    <!-- Overall Score Ring -->
+    <div class="glass rounded-3xl border border-slate-700 p-8 flex flex-col items-center justify-center card-hover">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-neon to-purple-500 flex items-center justify-center mb-4 floating">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <p class="text-slate-400 text-sm font-medium mb-6">Overall Score</p>
+      <div class="relative w-44 h-44">
+        <svg class="w-full h-full score-ring" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
+          <circle id="score-circle" cx="60" cy="60" r="54" fill="none"
+            stroke="{% if data.overall_score >= 85 %}#22ff88{% elif data.overall_score >= 60 %}#f59e0b{% else %}#ef4444{% endif %}"
+            stroke-width="12" stroke-linecap="round"
+            stroke-dasharray="339"
+            stroke-dashoffset="339"
+            data-score="{{ data.overall_score }}"/>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span id="score-counter" class="text-5xl font-black {% if data.overall_score >= 85 %}text-neon{% elif data.overall_score >= 60 %}text-yellow-400{% else %}text-red-400{% endif %} neon-glow">0</span>
+          <span class="text-slate-400 text-sm">/100</span>
+        </div>
+      </div>
+      <p class="mt-6 font-bold text-lg {% if data.overall_score >= 85 %}text-neon{% elif data.overall_score >= 60 %}text-yellow-400{% else %}text-red-400{% endif %}">
+        {% if data.overall_score >= 85 %}Excellent 🏆{% elif data.overall_score >= 70 %}Good 👍{% elif data.overall_score >= 50 %}Average 📈{% else %}Needs Work 🔧{% endif %}
+      </p>
+    </div>
+
+    <!-- Sub Scores -->
+    <div class="glass rounded-3xl border border-slate-700 p-7 card-hover">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-lg">Score Breakdown</h3>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">ATS Score</span><span class="font-bold text-white">{{ data.ats_score }}/100</span></div>
+          <div class="h-3 bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-neon to-emerald-400 rounded-full transition-all duration-1000" style="width:0%" data-width="{{ data.ats_score }}%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Content Quality</span><span class="font-bold text-white">{{ data.content_quality }}/100</span></div>
+          <div class="h-3 bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-1000" style="width:0%" data-width="{{ data.content_quality }}%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Impact Score</span><span class="font-bold text-white">{{ data.impact_score }}/100</span></div>
+          <div class="h-3 bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-1000" style="width:0%" data-width="{{ data.impact_score }}%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-slate-400">Design Score</span><span class="font-bold text-white">{{ data.design_score }}/100</span></div>
+          <div class="h-3 bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-orange-500 to-yellow-400 rounded-full transition-all duration-1000" style="width:0%" data-width="{{ data.design_score }}%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strengths -->
+    <div class="glass rounded-3xl border border-slate-700 p-7 card-hover">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-lg">✅ Your Strengths</h3>
+      </div>
+      <ul class="space-y-4 mb-6">
+        {% for s in data.strengths %}
+        <li class="flex items-start gap-3 text-sm">
+          <div class="w-6 h-6 rounded-full bg-neon/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <span class="text-neon text-xs">◆</span>
+          </div>
+          <span class="text-slate-300">{{ s }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      <div class="pt-5 border-t border-slate-700">
+        <h4 class="text-sm font-bold text-slate-400 mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          Professional Summary
+        </h4>
+        <p class="text-sm text-slate-300 leading-relaxed">{{ data.professional_summary }}</p>
+        <button onclick="copyText('{{ data.professional_summary|escapejs }}')" class="mt-3 text-xs text-neon hover:underline flex items-center gap-2 transition-colors">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          Copy Summary
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Job Matches -->
+  <div class="glass rounded-2xl border border-slate-700 p-6 mb-6 card-hover">
+    <h2 class="text-xl font-black mb-5">💼 Top Job Matches</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      {% for job in data.top_jobs %}
+      <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700 hover:border-purple-500/50 transition-all">
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="font-bold text-sm leading-tight">{{ job.title }}</h3>
+          <span class="text-xs font-black {% if job.match_percent >= 80 %}text-neon{% elif job.match_percent >= 60 %}text-yellow-400{% else %}text-slate-400{% endif %}">{{ job.match_percent }}%</span>
+        </div>
+        <div class="h-1.5 bg-slate-700 rounded-full mb-3 overflow-hidden">
+          <div class="h-full {% if job.match_percent >= 80 %}bg-neon{% elif job.match_percent >= 60 %}bg-yellow-400{% else %}bg-slate-500{% endif %} rounded-full" style="width:{{ job.match_percent }}%"></div>
+        </div>
+        <p class="text-xs text-slate-400">🇮🇳 {{ job.salary_india }}</p>
+        <p class="text-xs text-slate-400">🌍 {{ job.salary_global }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Improvements + Keywords row -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Improvements -->
+    <div class="glass rounded-2xl border border-slate-700 p-6">
+      <h2 class="text-xl font-black mb-5">🔧 What to Improve</h2>
+      <div class="space-y-5">
+        {% for imp in data.improvements %}
+        <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="tag bg-purple-500/20 text-purple-300 border border-purple-500/30">{{ imp.area }}</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+              <p class="text-red-400 text-xs font-bold mb-1">BEFORE</p>
+              <p class="text-slate-300">{{ imp.before }}</p>
+            </div>
+            <div class="bg-neon/10 border border-neon/20 rounded-lg p-3">
+              <p class="text-neon text-xs font-bold mb-1">AFTER</p>
+              <p class="text-slate-200">{{ imp.after }}</p>
+            </div>
+            <p class="text-slate-400 text-xs flex items-start gap-1"><span>💡</span>{{ imp.tip }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Missing Keywords + Skills Gap -->
+    <div class="space-y-6">
+      <div class="glass rounded-2xl border border-slate-700 p-6">
+        <h2 class="text-xl font-black mb-4">🔑 Missing Keywords</h2>
+        <div class="flex flex-wrap gap-2">
+          {% for kw in data.missing_keywords %}
+          <span class="tag bg-red-500/15 text-red-300 border border-red-500/25 py-1">{{ kw }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl border border-slate-700 p-6">
+        <h2 class="text-xl font-black mb-4">📚 Skills Gap</h2>
+        <div class="space-y-3">
+          {% for skill in data.skills_gap %}
+          <div class="flex items-start gap-3 bg-slate-800/50 rounded-xl p-3 border border-slate-700">
+            <span class="tag mt-0.5 {% if skill.importance == 'High' %}bg-red-500/20 text-red-300 border border-red-500/30{% elif skill.importance == 'Medium' %}bg-yellow-500/20 text-yellow-300 border border-yellow-500/30{% else %}bg-slate-500/20 text-slate-300 border border-slate-500/30{% endif %}">{{ skill.importance }}</span>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-sm">{{ skill.skill }}</p>
+              <p class="text-slate-400 text-xs mt-0.5">{{ skill.resource }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Career Roadmap -->
+  <div class="glass rounded-2xl border border-slate-700 p-6 mb-6">
+    <h2 class="text-xl font-black mb-6">🗺️ 3-Year Career Roadmap</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {% for step in data.career_roadmap %}
+      <div class="relative roadmap-line {% if not forloop.last %}{% endif %}">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-neon to-purple-500 flex items-center justify-center font-black text-slate-900 text-sm flex-shrink-0">{{ forloop.counter }}</div>
+          <div>
+            <p class="text-xs text-neon font-bold">{{ step.year }}</p>
+            <p class="font-bold">{{ step.milestone }}</p>
+          </div>
+        </div>
+        <ul class="space-y-2 ml-2">
+          {% for action in step.actions %}
+          <li class="flex items-start gap-2 text-sm text-slate-300">
+            <span class="text-neon mt-1 text-xs">▸</span>{{ action }}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Live Job Opportunities -->
+  {% if data.live_job_opportunities %}
+  <div class="glass rounded-2xl border border-slate-700 p-6 mb-6 animate-fade-in">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-xl font-black flex items-center gap-2">🎯 Live Job Opportunities Matching Your Profile</h2>
+        <p class="text-slate-400 text-sm mt-1">Real-time openings from top companies based on your resume</p>
+      </div>
+      <div class="text-xs text-slate-500 flex items-center gap-1">
+        <span class="w-2 h-2 bg-neon rounded-full animate-pulse"></span>
+        Powered by Gemini
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for job in data.live_job_opportunities %}
+      <div class="glass-card job-card rounded-2xl p-6 border border-slate-700 hover:border-purple-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/30 card-hover">
+        <!-- Company Header -->
+        <div class="flex items-start justify-between mb-5">
+          <div class="flex items-center gap-4">
+            <div class="company-logo {% if job.company == 'Google' %}google-bg{% elif job.company == 'Microsoft' %}microsoft-bg{% elif job.company == 'Atlassian' %}atlassian-bg{% elif job.company == 'Swiggy' %}swiggy-bg{% elif job.company == 'Stripe' %}stripe-bg{% elif job.company == 'Zomato' %}zomato-bg{% elif job.company == 'Coinbase' %}coinbase-bg{% elif job.company == 'Ola' %}ola-bg{% else %}default-bg{% endif %} shadow-lg">
+              {% if job.company == 'Google' %}G{% elif job.company == 'Microsoft' %}M{% elif job.company == 'Atlassian' %}A{% elif job.company == 'Swiggy' %}S{% elif job.company == 'Stripe' %}S{% elif job.company == 'Zomato' %}Z{% elif job.company == 'Coinbase' %}C{% elif job.company == 'Ola' %}O{% else %}{{ job.company.0 }}{% endif %}
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-lg group-hover:text-neon transition-colors">{{ job.company }}</h3>
+              <p class="text-sm text-slate-300 font-medium">{{ job.role }}</p>
+            </div>
+          </div>
+          <!-- Match Score Circle -->
+          <div class="relative w-16 h-16 flex-shrink-0">
+            <svg class="w-full h-full transform -rotate-90">
+              <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
+              <circle cx="32" cy="32" r="28" fill="none"
+                stroke="{% if job.match_percentage >= 80 %}#22ff88{% elif job.match_percentage >= 60 %}#f59e0b{% else %}#ef4444{% endif %}"
+                stroke-width="4" stroke-linecap="round"
+                stroke-dasharray="176"
+                stroke-dashoffset="176"
+                data-match="{{ job.match_percentage }}"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-sm font-black {% if job.match_percentage >= 80 %}text-neon{% elif job.match_percentage >= 60 %}text-yellow-400{% else %}text-red-400{% endif %}">
+                {{ job.match_percentage }}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location & Package -->
+        <div class="space-y-3 mb-4">
+          <div class="flex items-center gap-3 text-sm text-slate-300">
+            <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center">
+              <svg class="w-4 h-4 text-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <span>{{ job.location }}</span>
+          </div>
+          <div class="flex items-center gap-3 text-sm">
+            <div class="w-8 h-8 rounded-lg bg-green-900/30 flex items-center justify-center">
+              <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+              </svg>
+            </div>
+            <span class="text-white font-bold">{{ job.package }}</span>
+          </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="mb-4">
+          <span class="tag bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs">{{ job.experience }}</span>
+        </div>
+
+        <!-- Description -->
+        <p class="text-sm text-slate-300 leading-relaxed mb-4">{{ job.description }}</p>
+
+        <!-- Key Skills -->
+        <div class="flex flex-wrap gap-2 mb-5">
+          {% for skill in job.key_skills_matched %}
+          <span class="text-xs bg-slate-800/60 text-slate-300 px-3 py-1.5 rounded-full border border-slate-600">{{ skill }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- View Job Button -->
+        <button onclick="viewJob('{{ job.company }}', '{{ job.role }}')" class="w-full bg-gradient-to-r from-purple-600 to-neon hover:from-purple-700 hover:to-emerald-400 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 text-sm flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+          </svg>
+          View Job →
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Job Modal (hidden by default) -->
+  <div id="jobModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass rounded-2xl border border-slate-700 p-6 max-w-md w-full">
+      <div class="flex justify-between items-start mb-4">
+        <h3 class="text-lg font-bold">Job Details</h3>
+        <button onclick="closeJobModal()" class="text-slate-400 hover:text-white text-xl leading-none">×</button>
+      </div>
+      <div id="jobModalContent" class="text-slate-300">
+        <!-- Content will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <!-- Empty State for Live Jobs -->
+  <div class="glass rounded-2xl border border-slate-700 p-8 mb-6 text-center">
+    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mx-auto mb-4">
+      <span class="text-2xl">🔍</span>
+    </div>
+    <h3 class="text-lg font-bold text-slate-300 mb-2">No strong matches right now</h3>
+    <p class="text-slate-400 text-sm">Try updating your resume with more skills and experience to see better job matches!</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block chatbot %}
+<!-- Chat Bubble -->
+<button id="chat-bubble" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-neon to-purple-500 rounded-full shadow-neon flex items-center justify-center text-2xl z-40 hover:scale-110 transition-transform animate-pulse-neon" onclick="toggleChat()">
+  💬
+</button>
+
+<!-- Chat Panel -->
+<div id="chat-panel" class="fixed bottom-24 right-6 w-96 h-[520px] glass border border-slate-700 rounded-2xl z-40 hidden flex-col shadow-2xl overflow-hidden">
+  <!-- Header -->
+  <div class="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-900/80">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-neon to-purple-500 flex items-center justify-center text-lg">🤖</div>
+      <div>
+        <p class="font-bold text-sm">ResumeAI Coach</p>
+        <p class="text-xs text-neon">● Online</p>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="clearChat()" class="text-slate-400 hover:text-red-400 text-xs transition-colors">Clear</button>
+      <button onclick="toggleChat()" class="text-slate-400 hover:text-white transition-colors text-lg leading-none">×</button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
+    <div class="flex gap-2">
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-neon to-purple-500 flex items-center justify-center text-sm flex-shrink-0">🤖</div>
+      <div class="bg-slate-800 rounded-2xl rounded-tl-none px-4 py-3 text-sm max-w-[80%]">
+        Hi! I've analyzed your resume. Ask me anything — mock interview questions, how to improve bullet points, LinkedIn bio, salary negotiation tips, and more! 🚀
+      </div>
+    </div>
+  </div>
+
+  <!-- Typing indicator -->
+  <div id="typing-indicator" class="hidden px-4 pb-2">
+    <div class="flex gap-2 items-center">
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-neon to-purple-500 flex items-center justify-center text-sm flex-shrink-0">🤖</div>
+      <div class="bg-slate-800 rounded-2xl rounded-tl-none px-4 py-3">
+        <div class="flex gap-1">
+          <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0s"></div>
+          <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay:.15s"></div>
+          <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay:.3s"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suggestions -->
+  <div id="chat-suggestions" class="px-4 pb-2 flex gap-2 overflow-x-auto">
+    <button onclick="sendSuggestion(this)" class="flex-shrink-0 text-xs glass border border-slate-700 rounded-full px-3 py-1.5 hover:border-neon/40 transition-all whitespace-nowrap">Mock interview Qs</button>
+    <button onclick="sendSuggestion(this)" class="flex-shrink-0 text-xs glass border border-slate-700 rounded-full px-3 py-1.5 hover:border-neon/40 transition-all whitespace-nowrap">Write LinkedIn post</button>
+    <button onclick="sendSuggestion(this)" class="flex-shrink-0 text-xs glass border border-slate-700 rounded-full px-3 py-1.5 hover:border-neon/40 transition-all whitespace-nowrap">Salary negotiation tips</button>
+  </div>
+
+  <!-- Input -->
+  <div class="p-4 border-t border-slate-700 flex gap-2">
+    <input id="chat-input" type="text" placeholder="Ask your AI coach…" class="flex-1 bg-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-neon/50 placeholder-slate-500" onkeydown="if(event.key==='Enter')sendMessage()" />
+    <button onclick="sendMessage()" class="btn-primary px-4 py-2.5 rounded-xl text-sm">Send</button>
+  </div>
+</div>
+
+<script>
+  const ANALYSIS_ID = '{{ analysis.id }}';
+  const chatPanel = document.getElementById('chat-panel');
+  const chatMessages = document.getElementById('chat-messages');
+  const chatInput = document.getElementById('chat-input');
+  const typingIndicator = document.getElementById('typing-indicator');
+  const suggestions = document.getElementById('chat-suggestions');
+
+  function toggleChat() {
+    chatPanel.classList.toggle('hidden');
+    chatPanel.classList.toggle('flex');
+    if (!chatPanel.classList.contains('hidden')) chatInput.focus();
+  }
+
+  function appendMessage(role, text) {
+    const isUser = role === 'user';
+    const div = document.createElement('div');
+    div.className = `flex gap-2 ${isUser ? 'flex-row-reverse' : ''}`;
+    div.innerHTML = `
+      ${!isUser ? '<div class="w-7 h-7 rounded-full bg-gradient-to-br from-neon to-purple-500 flex items-center justify-center text-sm flex-shrink-0">🤖</div>' : ''}
+      <div class="${isUser ? 'bg-gradient-to-br from-neon/20 to-purple-500/20 border border-neon/20 rounded-2xl rounded-tr-none' : 'bg-slate-800 rounded-2xl rounded-tl-none'} px-4 py-3 text-sm max-w-[80%] whitespace-pre-wrap">${text}</div>
+    `;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    chatInput.value = '';
+    suggestions.classList.add('hidden');
+    appendMessage('user', msg);
+    typingIndicator.classList.remove('hidden');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+      const res = await fetch(`/chat/${ANALYSIS_ID}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ message: msg }),
+      });
+      const data = await res.json();
+      typingIndicator.classList.add('hidden');
+      if (!res.ok) throw new Error(data.error);
+      appendMessage('model', data.reply);
+    } catch (err) {
+      typingIndicator.classList.add('hidden');
+      appendMessage('model', '⚠️ ' + err.message);
+    }
+  }
+
+  function sendSuggestion(btn) {
+    chatInput.value = btn.textContent;
+    sendMessage();
+  }
+
+  function clearChat() {
+    chatMessages.innerHTML = '';
+    suggestions.classList.remove('hidden');
+  }
+
+  function getCookie(name) {
+    const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+  }
+
+  // Animate scores on load
+  window.addEventListener('load', () => {
+    // Score ring
+    const circle = document.getElementById('score-circle');
+    const score = parseInt(circle.dataset.score);
+    const circumference = 339; // Updated for larger circle
+    const offset = circumference - (score / 100) * circumference;
+    setTimeout(() => { circle.style.strokeDashoffset = offset; }, 300);
+
+    // Counter
+    const counter = document.getElementById('score-counter');
+    let current = 0;
+    const interval = setInterval(() => {
+      current = Math.min(current + 2, score);
+      counter.textContent = current;
+      if (current >= score) clearInterval(interval);
+    }, 30);
+
+    // Progress bars
+    document.querySelectorAll('[data-width]').forEach(el => {
+      setTimeout(() => { el.style.width = el.dataset.width; }, 500);
+    });
+
+    // Animate match score circles
+    document.querySelectorAll('[data-match]').forEach(circle => {
+      const match = parseInt(circle.dataset.match);
+      const circumference = 176; // Updated for larger circles
+      const offset = circumference - (match / 100) * circumference;
+      setTimeout(() => { 
+        circle.style.strokeDashoffset = offset;
+        circle.style.transition = 'stroke-dashoffset 1.5s ease';
+      }, 800);
+    });
+
+    // Confetti for high score
+    if (score >= 85) launchConfetti();
+  });
+
+  function launchConfetti() {
+    const colors = ['#22ff88', '#a855f7', '#f59e0b', '#3b82f6', '#ef4444'];
+    for (let i = 0; i < 60; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.style.cssText = `left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*0.5}s;transform:rotate(${Math.random()*360}deg)`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+      }, i * 50);
+    }
+  }
+
+  function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard! ✅'));
+  }
+
+  function shareResults() {
+    navigator.clipboard.writeText(window.location.href).then(() => showToast('Link copied! Share it anywhere 🔗'));
+  }
+
+  function viewJob(company, role) {
+    const modal = document.getElementById('jobModal');
+    const content = document.getElementById('jobModalContent');
+    content.innerHTML = `
+      <div class="space-y-4">
+        <div>
+          <h4 class="font-bold text-white mb-2">${company}</h4>
+          <p class="text-neon font-medium">${role}</p>
+        </div>
+        <div class="bg-slate-800/50 rounded-lg p-4">
+          <p class="text-sm text-slate-300">Job link would go here. This is a placeholder for the actual job application page.</p>
+          <p class="text-xs text-slate-500 mt-2">In production, this would open the actual job posting on the company's career page or job board.</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="closeJobModal()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg transition-colors">
+            Close
+          </button>
+          <button class="flex-1 bg-gradient-to-r from-purple-600 to-neon hover:from-purple-700 hover:to-emerald-400 text-white py-2 rounded-lg transition-all">
+            Apply (Placeholder)
+          </button>
+        </div>
+      </div>
+    `;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeJobModal() {
+    const modal = document.getElementById('jobModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  // Close modal when clicking outside
+  document.getElementById('jobModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeJobModal();
+    }
+  });
+</script>
+{% endblock %}

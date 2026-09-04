@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}ResumeAI — Your AI Career Co-Pilot{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            neon: '#22ff88',
+            dark: { DEFAULT: '#0f172a', 800: '#1e293b', 700: '#334155' },
+          },
+          boxShadow: {
+            neon: '0 0 20px rgba(34,255,136,0.35)',
+            purple: '0 0 20px rgba(168,85,247,0.35)',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass { background: rgba(30,41,59,0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+    .neon-text { color: #22ff88; text-shadow: 0 0 20px rgba(34,255,136,0.5); }
+    .gradient-text { background: linear-gradient(135deg, #22ff88, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .btn-primary { background: linear-gradient(135deg, #22ff88, #16a34a); color: #0f172a; font-weight: 700; transition: all .2s; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(34,255,136,0.5); }
+    .card-hover { transition: all .25s; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 0 30px rgba(168,85,247,0.2); border-color: rgba(168,85,247,0.4) !important; }
+    @keyframes pulse-neon { 0%,100%{box-shadow:0 0 10px rgba(34,255,136,.4)} 50%{box-shadow:0 0 30px rgba(34,255,136,.8)} }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    .animate-float { animation: float 4s ease-in-out infinite; }
+    .animate-fade-up { animation: fadeInUp .6s ease forwards; }
+    .animate-pulse-neon { animation: pulse-neon 2s ease-in-out infinite; }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0f172a; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    .light body, .light .glass { background: rgba(248,250,252,0.9); }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen transition-colors duration-300">
+
+<!-- Navbar -->
+<nav class="fixed top-0 w-full z-50 glass border-b border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <a href="/" class="flex items-center gap-2 font-black text-xl">
+      <span class="text-2xl">🤖</span>
+      <span class="gradient-text">ResumeAI</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <a href="/mock-interviews/" class="text-slate-400 hover:text-neon transition-colors text-sm flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+        AI Mock Interviews
+      </a>
+      <button id="history-btn" class="text-slate-400 hover:text-neon transition-colors text-sm flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        History
+      </button>
+      <button id="theme-toggle" class="p-2 rounded-lg glass hover:border-neon/40 transition-all" title="Toggle theme">
+        <svg id="sun-icon" class="w-5 h-5 text-yellow-400 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 15a5 5 0 100-10 5 5 0 000 10zm7.07-12.07a1 1 0 010 1.41l-.71.71a1 1 0 11-1.41-1.41l.71-.71a1 1 0 011.41 0zM21 11h1a1 1 0 110 2h-1a1 1 0 110-2zM4.93 4.93a1 1 0 011.41 0l.71.71A1 1 0 115.64 7.05l-.71-.71a1 1 0 010-1.41zM3 11H2a1 1 0 100 2h1a1 1 0 100-2zm15.36 7.05a1 1 0 01-1.41-1.41l.71-.71a1 1 0 011.41 1.41l-.71.71zM12 20a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.64 18.36l-.71.71a1 1 0 01-1.41-1.41l.71-.71a1 1 0 011.41 1.41z"/></svg>
+        <svg id="moon-icon" class="w-5 h-5 text-slate-300" fill="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- History Sidebar -->
+<div id="history-sidebar" class="fixed top-0 right-0 h-full w-80 glass border-l border-slate-700 z-40 transform translate-x-full transition-transform duration-300 pt-16 overflow-y-auto">
+  <div class="p-4">
+    <h3 class="font-bold text-lg mb-4 gradient-text">Analysis History</h3>
+    <div id="history-items" class="space-y-2">
+      <p class="text-slate-500 text-sm">Loading…</p>
+    </div>
+  </div>
+</div>
+<div id="history-overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="closeHistory()"></div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden">
+  <div id="toast-inner" class="glass px-5 py-3 rounded-xl text-sm font-medium shadow-xl border border-slate-700"></div>
+</div>
+
+{% block content %}{% endblock %}
+
+<!-- Chatbot Bubble -->
+{% block chatbot %}{% endblock %}
+
+<script>
+  // Theme
+  const htmlEl = document.getElementById('html-root');
+  const sunIcon = document.getElementById('sun-icon');
+  const moonIcon = document.getElementById('moon-icon');
+  function applyTheme(dark) {
+    htmlEl.classList.toggle('dark', dark);
+    document.body.classList.toggle('bg-slate-950', dark);
+    document.body.classList.toggle('bg-slate-100', !dark);
+    document.body.classList.toggle('text-slate-100', dark);
+    document.body.classList.toggle('text-slate-900', !dark);
+    sunIcon.classList.toggle('hidden', dark);
+    moonIcon.classList.toggle('hidden', !dark);
+  }
+  const savedTheme = localStorage.getItem('theme');
+  applyTheme(savedTheme !== 'light');
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const isDark = htmlEl.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    applyTheme(!isDark);
+  });
+
+  // Toast
+  function showToast(msg, type='info') {
+    const t = document.getElementById('toast');
+    const ti = document.getElementById('toast-inner');
+    ti.textContent = msg;
+    ti.className = `glass px-5 py-3 rounded-xl text-sm font-medium shadow-xl border ${type==='error'?'border-red-500 text-red-400':'border-neon/40 text-neon'}`;
+    t.classList.remove('hidden');
+    setTimeout(() => t.classList.add('hidden'), 3500);
+  }
+
+  // History sidebar
+  const histBtn = document.getElementById('history-btn');
+  const histSidebar = document.getElementById('history-sidebar');
+  const histOverlay = document.getElementById('history-overlay');
+  function closeHistory() {
+    histSidebar.classList.add('translate-x-full');
+    histOverlay.classList.add('hidden');
+  }
+  histBtn.addEventListener('click', async () => {
+    histSidebar.classList.remove('translate-x-full');
+    histOverlay.classList.remove('hidden');
+    const res = await fetch('/history/');
+    const data = await res.json();
+    const container = document.getElementById('history-items');
+    if (!data.history.length) { container.innerHTML = '<p class="text-slate-500 text-sm">No analyses yet.</p>'; return; }
+    container.innerHTML = data.history.map(h => `
+      <a href="/results/${h.id}/" class="block glass rounded-lg p-3 hover:border-neon/40 transition-all card-hover border border-slate-700">
+        <p class="font-medium text-sm truncate">${h.filename}</p>
+        <div class="flex justify-between items-center mt-1">
+          <span class="text-xs text-slate-400">${new Date(h.created_at).toLocaleDateString()}</span>
+          <span class="text-xs font-bold neon-text">${h['analysis_json__overall_score']}/100</span>
+        </div>
+      </a>`).join('');
+  });
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

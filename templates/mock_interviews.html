@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mock Interviews - ResumeAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --neon-green: #22ff88;
+            --purple: #a855f7;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .glass-effect {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .neon-green {
+            color: var(--neon-green);
+        }
+        
+        .neon-border {
+            border-color: var(--neon-green);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(34, 255, 136, 0.15);
+            border-color: rgba(34, 255, 136, 0.3);
+        }
+        
+        .category-pill {
+            transition: all 0.3s ease;
+        }
+        
+        .category-pill:hover {
+            background: rgba(34, 255, 136, 0.1);
+            border-color: rgba(34, 255, 136, 0.3);
+        }
+        
+        .category-pill.active {
+            background: rgba(34, 255, 136, 0.2);
+            border-color: var(--neon-green);
+        }
+        
+        .quiz-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+        
+        .btn-quiz {
+            background: #22c55e;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-quiz:hover {
+            background: #16a34a;
+            transform: translateY(-1px);
+        }
+        
+        .btn-practice {
+            background: linear-gradient(135deg, var(--purple), #7c3aed);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-practice:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.3);
+        }
+        
+        .search-input {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 0 3px rgba(34, 255, 136, 0.1);
+        }
+        
+        .dropdown-select {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-select:focus {
+            outline: none;
+            border-color: var(--neon-green);
+        }
+        
+        .practiced-badge {
+            background: rgba(168, 85, 247, 0.2);
+            color: var(--neon-green);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-effect px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <!-- Breadcrumb -->
+                <div class="flex items-center text-sm text-gray-400">
+                    <a href="{% url 'dashboard' %}" class="hover:text-neon-green transition-colors">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Mock Interview
+                    </a>
+                    <span class="mx-2">></span>
+                    <span class="text-neon-green font-medium">Quiz</span>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="mainSearch"
+                        placeholder="Search for mock interviews, practice sets..."
+                        class="search-input w-96 px-12 py-3 rounded-full text-white placeholder-gray-500"
+                    >
+                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <span class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-neon-green text-black px-2 py-1 rounded-full text-xs font-bold">
+                        98 K
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-20 px-6 pb-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Category Pills -->
+            <div class="mb-8">
+                <div class="flex items-center space-x-2 overflow-x-auto pb-2">
+                    <!-- Left Arrow -->
+                    <button class="flex-shrink-0 p-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7 7"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Category Pills -->
+                    <button class="category-pill flex-shrink-0 px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white" data-category="frontend">
+                        Frontend
+                    </button>
+                    
+                    <button class="category-pill flex-shrink-0 px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white flex items-center space-x-2" data-category="backend">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s-8 1.79-8 4z"></path>
+                        </svg>
+                        <span>Backend</span>
+                    </button>
+                    
+                    <button class="category-pill flex-shrink-0 px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white flex items-center space-x-2" data-category="dsa">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        <span>DSA</span>
+                    </button>
+                    
+                    <button class="category-pill flex-shrink-0 px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white flex items-center space-x-2" data-category="system_design">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s-8 1.79-8 4z"></path>
+                        </svg>
+                        <span>System Design</span>
+                    </button>
+                    
+                    <button class="category-pill flex-shrink-0 px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white flex items-center space-x-2" data-category="behavioral">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <span>Behavioral</span>
+                    </button>
+                    
+                    <button class="category-pill flex-shrink-0 px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white flex items-center space-x-2" data-category="mobile">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8m-4-18h.01M12 3v1m0 0a3 3 0 013 0m-3 0v1m0 0a3 3 0 013 0m-3 0v1m0 0a3 3 0 013 0"></path>
+                        </svg>
+                        <span>Mobile</span>
+                    </button>
+                    
+                    <button class="category-pill flex-shrink-0 px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white flex items-center space-x-2" data-category="cloud">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10.9 0 1.41 1.41A5 5 0 013 15z"></path>
+                        </svg>
+                        <span>Cloud</span>
+                    </button>
+                    
+                    <!-- Right Arrow -->
+                    <button class="flex-shrink-0 p-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search and Filter Row -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 mb-8">
+                <!-- Search Input -->
+                <div class="flex items-center space-x-3">
+                    <input 
+                        type="text" 
+                        id="secondarySearch"
+                        placeholder="Search..."
+                        class="search-input w-64 px-4 py-2 rounded-lg text-white placeholder-gray-500"
+                    >
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <span class="text-gray-400">
+                        <span id="resultsCount">12</span>+ results
+                    </span>
+                </div>
+                
+                <!-- Difficulty Dropdown -->
+                <div>
+                    <select id="difficultyFilter" class="dropdown-select px-4 py-2 rounded-lg text-white">
+                        <option value="">All Difficulties</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quiz Cards Grid -->
+            <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Card 1: SQL for Beginners -->
+                <div class="quiz-card card-hover rounded-xl p-6" data-category="backend" data-difficulty="beginner">
+                    <h3 class="text-xl font-semibold mb-2">SQL for Beginners</h3>
+                    <div class="flex items-center mb-3">
+                        <span class="practiced-badge px-3 py-1 rounded-full text-sm font-medium">
+                            1,114 practiced
+                        </span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Description: Learn and test your skills on SELECT, WHERE, ORDER BY, GROUP BY, JOINs and more...
+                    </p>
+                    <div class="flex space-x-3">
+                        <button onclick="takeQuiz(1)" class="btn-quiz flex-1 px-4 py-2 rounded-lg font-medium">
+                            Quiz
+                        </button>
+                        <button onclick="startPractice(1)" class="btn-practice flex-1 px-4 py-2 rounded-lg font-medium">
+                            Practice Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 2: Aptitude and Logical Reasoning Intermediate -->
+                <div class="quiz-card card-hover rounded-xl p-6" data-category="behavioral" data-difficulty="intermediate">
+                    <h3 class="text-xl font-semibold mb-2">Aptitude and Logical Reasoning {Intermediate}</h3>
+                    <div class="flex items-center mb-3">
+                        <span class="practiced-badge px-3 py-1 rounded-full text-sm font-medium">
+                            536 practiced
+                        </span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Description: Sharpen Your Problem-Solving Skills and Boost Your Mental Agility with Comprehensive...
+                    </p>
+                    <div class="flex space-x-3">
+                        <button onclick="takeQuiz(2)" class="btn-quiz flex-1 px-4 py-2 rounded-lg font-medium">
+                            Quiz
+                        </button>
+                        <button onclick="startPractice(2)" class="btn-practice flex-1 px-4 py-2 rounded-lg font-medium">
+                            Practice Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 3: Aptitude & Logical Reasoning Beginner -->
+                <div class="quiz-card card-hover rounded-xl p-6" data-category="behavioral" data-difficulty="beginner">
+                    <h3 class="text-xl font-semibold mb-2">Aptitude & Logical Reasoning {Beginner}</h3>
+                    <div class="flex items-center mb-3">
+                        <span class="practiced-badge px-3 py-1 rounded-full text-sm font-medium">
+                            396 practiced
+                        </span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Description: Build Core Problem-Solving and Analytical Skills with Beginner-Friendly Logical...
+                    </p>
+                    <div class="flex space-x-3">
+                        <button onclick="takeQuiz(3)" class="btn-quiz flex-1 px-4 py-2 rounded-lg font-medium">
+                            Quiz
+                        </button>
+                        <button onclick="startPractice(3)" class="btn-practice flex-1 px-4 py-2 rounded-lg font-medium">
+                            Practice Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 4: Python Fundamentals -->
+                <div class="quiz-card card-hover rounded-xl p-6" data-category="backend" data-difficulty="beginner">
+                    <h3 class="text-xl font-semibold mb-2">Python Fundamentals</h3>
+                    <div class="flex items-center mb-3">
+                        <span class="practiced-badge px-3 py-1 rounded-full text-sm font-medium">
+                            196 practiced
+                        </span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Description: A quiz to test variables, loops, and functions in Python programming language...
+                    </p>
+                    <div class="flex space-x-3">
+                        <button onclick="takeQuiz(4)" class="btn-quiz flex-1 px-4 py-2 rounded-lg font-medium">
+                            Quiz
+                        </button>
+                        <button onclick="startPractice(4)" class="btn-practice flex-1 px-4 py-2 rounded-lg font-medium">
+                            Practice Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 5: JavaScript Fundamentals -->
+                <div class="quiz-card card-hover rounded-xl p-6" data-category="frontend" data-difficulty="beginner">
+                    <h3 class="text-xl font-semibold mb-2">JavaScript Fundamentals</h3>
+                    <div class="flex items-center mb-3">
+                        <span class="practiced-badge px-3 py-1 rounded-full text-sm font-medium">
+                            120 practiced
+                        </span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Description: Test your knowledge of core JavaScript concepts including ES6, async/await,...
+                    </p>
+                    <div class="flex space-x-3">
+                        <button onclick="takeQuiz(5)" class="btn-quiz flex-1 px-4 py-2 rounded-lg font-medium">
+                            Quiz
+                        </button>
+                        <button onclick="startPractice(5)" class="btn-practice flex-1 px-4 py-2 rounded-lg font-medium">
+                            Practice Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 6: Fullstack Java Developer -->
+                <div class="quiz-card card-hover rounded-xl p-6" data-category="backend" data-difficulty="advanced">
+                    <h3 class="text-xl font-semibold mb-2">Fullstack Java Developer | Trainer</h3>
+                    <div class="flex items-center mb-3">
+                        <span class="practiced-badge px-3 py-1 rounded-full text-sm font-medium">
+                            107 practiced
+                        </span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Description: Advanced Java Development, Spring Boot, Microservices, and Full-Stack Architecture...
+                    </p>
+                    <div class="flex space-x-3">
+                        <button onclick="takeQuiz(6)" class="btn-quiz flex-1 px-4 py-2 rounded-lg font-medium">
+                            Quiz
+                        </button>
+                        <button onclick="startPractice(6)" class="btn-practice flex-1 px-4 py-2 rounded-lg font-medium">
+                            Practice Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Quiz/Practice Actions -->
+    <div id="actionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 id="modalTitle" class="text-2xl font-bold mb-4"></h3>
+            <p id="modalMessage" class="text-gray-400 mb-6"></p>
+            <div class="flex space-x-3">
+                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors">
+                    Cancel
+                </button>
+                <button id="modalActionBtn" class="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter functionality
+        const cards = document.querySelectorAll('.quiz-card');
+        const categoryPills = document.querySelectorAll('.category-pill');
+        const difficultyFilter = document.getElementById('difficultyFilter');
+        const mainSearch = document.getElementById('mainSearch');
+        const secondarySearch = document.getElementById('secondarySearch');
+        const resultsCount = document.getElementById('resultsCount');
+
+        function filterCards() {
+            const selectedCategory = document.querySelector('.category-pill.active')?.dataset.category || '';
+            const selectedDifficulty = difficultyFilter.value;
+            const searchTerm = mainSearch.value.toLowerCase() || secondarySearch.value.toLowerCase();
+            
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const cardCategory = card.dataset.category;
+                const cardDifficulty = card.dataset.difficulty;
+                const cardText = card.textContent.toLowerCase();
+                
+                const categoryMatch = !selectedCategory || cardCategory === selectedCategory;
+                const difficultyMatch = !selectedDifficulty || cardDifficulty === selectedDifficulty;
+                const searchMatch = !searchTerm || cardText.includes(searchTerm);
+                
+                if (categoryMatch && difficultyMatch && searchMatch) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            resultsCount.textContent = visibleCount;
+        }
+
+        // Category pill clicks
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                categoryPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                filterCards();
+            });
+        });
+
+        // Difficulty filter
+        difficultyFilter.addEventListener('change', filterCards);
+
+        // Search inputs
+        mainSearch.addEventListener('input', (e) => {
+            secondarySearch.value = e.target.value;
+            filterCards();
+        });
+
+        secondarySearch.addEventListener('input', (e) => {
+            mainSearch.value = e.target.value;
+            filterCards();
+        });
+
+        // Modal functions
+        function takeQuiz(cardId) {
+            const modal = document.getElementById('actionModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalActionBtn = document.getElementById('modalActionBtn');
+            
+            modalTitle.textContent = 'Start Quiz';
+            modalMessage.textContent = 'Test your knowledge with this quiz. Questions will cover all aspects of the topic.';
+            modalActionBtn.textContent = 'Start Quiz';
+            modalActionBtn.onclick = () => {
+                alert('Starting Quiz for card ' + cardId);
+                closeModal();
+            };
+            
+            modal.classList.remove('hidden');
+        }
+
+        function startPractice(cardId) {
+            const modal = document.getElementById('actionModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalActionBtn = document.getElementById('modalActionBtn');
+            
+            modalTitle.textContent = 'Start AI Mock Interview';
+            modalMessage.textContent = 'Starting AI-powered mock interview using Gemini... Our AI will ask you relevant questions and provide real-time feedback.';
+            modalActionBtn.textContent = 'Start Interview';
+            modalActionBtn.onclick = () => {
+                alert('Starting AI Mock Interview for card ' + cardId);
+                closeModal();
+            };
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('actionModal').classList.add('hidden');
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal on background click
+        document.getElementById('actionModal').addEventListener('click', (e) => {
+            if (e.target.id === 'actionModal') {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        filterCards();
+    </script>
+</body>
+</html>

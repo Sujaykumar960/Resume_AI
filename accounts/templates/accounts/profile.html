@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - ResumeAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --neon-green: #22ff88;
+            --purple: #a855f7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-hover:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(34, 255, 136, 0.3);
+        }
+        
+        .neon {
+            color: var(--neon-green);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--neon-green), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--neon-green);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-green), #20cc6f);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(34, 255, 136, 0.3);
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .analysis-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .analysis-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(34, 255, 136, 0.3);
+        }
+        
+        .score-badge {
+            background: linear-gradient(135deg, var(--neon-green), #20cc6f);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-2xl font-bold">
+                Resume<span class="neon">AI</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link">Pricing</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-400">Welcome, {{ user.username }}</span>
+                <a href="{% url 'accounts:logout' %}" class="nav-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-20 px-6">
+        <div class="container mx-auto max-w-4xl">
+            <!-- Profile Header -->
+            <div class="glass rounded-2xl p-8 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">My Profile</h1>
+                        <p class="text-gray-400">Manage your account and view your resume analysis history</p>
+                    </div>
+                    <div class="text-center">
+                        {% if user.profile_photo %}
+                            <img src="{{ user.profile_photo.url }}" alt="{{ user.username }}'s profile photo" class="w-20 h-20 rounded-full object-cover border-2 border-neon">
+                        {% else %}
+                            <div class="w-20 h-20 bg-gradient-to-r from-neon to-purple rounded-full flex items-center justify-center text-2xl font-bold">
+                                {{ user.username|slice:":2"|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- User Info -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Username</label>
+                        <input type="text" value="{{ user.username }}" readonly class="w-full glass rounded-lg px-4 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                        <input type="email" value="{{ user.email }}" readonly class="w-full glass rounded-lg px-4 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Member Since</label>
+                        <input type="text" value="{{ user.date_joined|date:'M d, Y' }}" readonly class="w-full glass rounded-lg px-4 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Last Login</label>
+                        <input type="text" value="{{ user.last_login|date:'M d, Y H:i' }}" readonly class="w-full glass rounded-lg px-4 py-2 text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card text-center">
+                    <div class="text-3xl font-bold neon mb-2" id="total-analyses">0</div>
+                    <div class="text-sm text-gray-400">Total Analyses</div>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="text-3xl font-bold neon mb-2" id="avg-score">0</div>
+                    <div class="text-sm text-gray-400">Average Score</div>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="text-3xl font-bold neon mb-2" id="highest-score">0</div>
+                    <div class="text-sm text-gray-400">Highest Score</div>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="text-3xl font-bold neon mb-2" id="improvement">0%</div>
+                    <div class="text-sm text-gray-400">Improvement</div>
+                </div>
+            </div>
+
+            <!-- Analysis History -->
+            <div class="glass rounded-2xl p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Analysis History</h2>
+                    <a href="{% url 'dashboard' %}" class="btn-primary">New Analysis</a>
+                </div>
+                
+                <div id="analysis-history">
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-4">📊</div>
+                        <p>Loading your analysis history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load user's analysis history
+        async function loadAnalysisHistory() {
+            try {
+                const response = await fetch('{% url "history" %}');
+                const data = await response.json();
+                
+                const historyContainer = document.getElementById('analysis-history');
+                const statsContainer = {
+                    total: document.getElementById('total-analyses'),
+                    avg: document.getElementById('avg-score'),
+                    highest: document.getElementById('highest-score'),
+                    improvement: document.getElementById('improvement')
+                };
+                
+                if (data.history.length === 0) {
+                    historyContainer.innerHTML = `
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="text-4xl mb-4">📄</div>
+                            <p>No analyses yet. <a href="{% url 'dashboard' %}" class="neon underline">Upload your first resume</a> to get started!</p>
+                        </div>
+                    `;
+                    
+                    // Set stats to 0
+                    statsContainer.total.textContent = '0';
+                    statsContainer.avg.textContent = '0';
+                    statsContainer.highest.textContent = '0';
+                    statsContainer.improvement.textContent = '0%';
+                    return;
+                }
+                
+                // Calculate statistics
+                const scores = data.history
+                    .filter(item => item.analysis_json__overall_score)
+                    .map(item => item.analysis_json__overall_score);
+                
+                const totalAnalyses = data.history.length;
+                const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+                const highestScore = scores.length > 0 ? Math.max(...scores) : 0;
+                const improvement = scores.length > 1 ? Math.round(((scores[scores.length - 1] - scores[0]) / scores[0]) * 100) : 0;
+                
+                // Update statistics with animation
+                animateCounter(statsContainer.total, totalAnalyses);
+                animateCounter(statsContainer.avg, avgScore);
+                animateCounter(statsContainer.highest, highestScore);
+                statsContainer.improvement.textContent = improvement > 0 ? `+${improvement}%` : `${improvement}%`;
+                
+                // Render analysis history
+                historyContainer.innerHTML = data.history.map((item, index) => {
+                    const score = item.analysis_json__overall_score;
+                    const date = new Date(item.created_at).toLocaleDateString();
+                    const time = new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    return `
+                        <div class="analysis-item" onclick="window.location.href='/results/${item.id}/'">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <h3 class="font-semibold text-lg mr-3">${item.filename}</h3>
+                                        ${score ? `<span class="score-badge">${score}/100</span>` : ''}
+                                    </div>
+                                    <div class="text-sm text-gray-400 mb-2">
+                                        ${date} at ${time}
+                                        ${item.job_description ? '• With job description' : '• Without job description'}
+                                    </div>
+                                    ${item.analysis_json?.improvements ? `
+                                        <div class="text-sm text-gray-300">
+                                            <span class="font-medium">Key improvements:</span> 
+                                            ${item.analysis_json.improvements.slice(0, 2).join(', ')}
+                                            ${item.analysis_json.improvements.length > 2 ? '...' : ''}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <div class="text-neon text-sm">
+                                    View Results →
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('analysis-history').innerHTML = `
+                    <div class="text-center text-red-400 py-8">
+                        <p>Error loading analysis history. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Animate counter
+        function animateCounter(element, target) {
+            const duration = 1000;
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const updateCounter = () => {
+                current += increment;
+                if (current < target) {
+                    element.textContent = Math.ceil(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target;
+                }
+            };
+            
+            updateCounter();
+        }
+        
+        // Load history when page loads
+        document.addEventListener('DOMContentLoaded', loadAnalysisHistory);
+    </script>
+</body>
+</html>

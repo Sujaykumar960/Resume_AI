@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ResumeAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .neon-green {
+            color: #22ff88;
+        }
+        .neon-border {
+            border-color: #22ff88;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4">
+        <div class="max-w-md mx-auto">
+            <div class="glass-effect rounded-2xl p-8 shadow-2xl">
+                <!-- Logo and Title -->
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-white mb-2">
+                        Resume<span class="neon-green">AI</span>
+                    </h1>
+                    <p class="text-gray-200">Welcome back! Please login to your account.</p>
+                </div>
+
+                <!-- Login Form -->
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded-lg">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-200 mb-2">
+                                Username or Email
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <p class="text-red-400 text-sm mt-1">{{ form.username.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-200 mb-2">
+                                Password
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <p class="text-red-400 text-sm mt-1">{{ form.password.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex items-center">
+                            {{ form.remember_me }}
+                            <label for="{{ form.remember_me.id_for_label }}" class="ml-2 text-sm text-gray-200">
+                                Remember me
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-green-400 to-green-600 text-white py-3 rounded-lg font-semibold hover:from-green-500 hover:to-green-700 transition-all duration-300 transform hover:scale-105">
+                        Login
+                    </button>
+                </form>
+
+                <!-- Footer Links -->
+                <div class="mt-6 text-center space-y-2">
+                    <p class="text-gray-200">
+                        Don't have an account? 
+                        <a href="{% url 'accounts:signup' %}" class="neon-green hover:underline font-semibold">
+                            Sign up
+                        </a>
+                    </p>
+                    <p class="text-gray-200">
+                        <a href="#" class="text-gray-400 hover:text-gray-200 text-sm">
+                            Forgot your password?
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Back to Home -->
+                <div class="mt-4 text-center">
+                    <a href="{% url 'home' %}" class="text-gray-400 hover:text-gray-200 text-sm">
+                        ← Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

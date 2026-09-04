@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Opportunities - ResumeAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --neon-green: #22ff88;
+            --purple: #a855f7;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .glass-effect {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .neon-green {
+            color: var(--neon-green);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(34, 255, 136, 0.15);
+            border-color: rgba(34, 255, 136, 0.3);
+        }
+        
+        .job-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+        
+        .filter-pill {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-pill:hover {
+            background: rgba(34, 255, 136, 0.1);
+            border-color: rgba(34, 255, 136, 0.3);
+        }
+        
+        .filter-pill.active {
+            background: rgba(34, 255, 136, 0.2);
+            border-color: var(--neon-green);
+        }
+        
+        .search-input {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 0 3px rgba(34, 255, 136, 0.1);
+        }
+        
+        .salary-badge {
+            background: linear-gradient(135deg, var(--neon-green), #16a34a);
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .match-percentage {
+            background: rgba(168, 85, 247, 0.2);
+            color: var(--neon-green);
+        }
+        
+        .company-logo {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-apply {
+            background: linear-gradient(135deg, var(--neon-green), #16a34a);
+            color: #000;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-apply:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(34, 255, 136, 0.3);
+        }
+        
+        .btn-save {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-save:hover {
+            background: rgba(34, 255, 136, 0.1);
+            border-color: var(--neon-green);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-effect px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <!-- Breadcrumb -->
+                <div class="flex items-center text-sm text-gray-400">
+                    <a href="{% url 'dashboard' %}" class="hover:text-neon-green transition-colors">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <span class="mx-2">></span>
+                    <span class="text-neon-green font-medium">Career Opportunities</span>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="jobSearch"
+                        placeholder="Search for jobs, companies, locations..."
+                        class="search-input w-96 px-12 py-3 rounded-full text-white placeholder-gray-500"
+                    >
+                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <span class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-neon-green text-black px-2 py-1 rounded-full text-xs font-bold">
+                        2.5 K
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-24 px-6 pb-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Hero Section -->
+            <div class="text-center mb-12 fade-in">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    Find Your <span class="gradient-text">Dream Job</span>
+                </h1>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Discover opportunities that match your skills and experience. Powered by AI-driven matching.
+                </p>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="glass-effect rounded-2xl p-6 mb-8">
+                <div class="flex flex-wrap items-center justify-between gap-6">
+                    <!-- Job Type Filter -->
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm font-medium text-gray-300">Job Type:</span>
+                        <div class="flex space-x-2">
+                            <button class="filter-pill px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white active" data-filter="all">
+                                All
+                            </button>
+                            <button class="filter-pill px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white" data-filter="fulltime">
+                                Full-time
+                            </button>
+                            <button class="filter-pill px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white" data-filter="parttime">
+                                Part-time
+                            </button>
+                            <button class="filter-pill px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white" data-filter="remote">
+                                Remote
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Experience Level Filter -->
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm font-medium text-gray-300">Experience:</span>
+                        <div class="flex space-x-2">
+                            <button class="filter-pill px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white active" data-exp="all">
+                                All
+                            </button>
+                            <button class="filter-pill px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white" data-exp="entry">
+                                Entry Level
+                            </button>
+                            <button class="filter-pill px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white" data-exp="mid">
+                                Mid Level
+                            </button>
+                            <button class="filter-pill px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:text-white" data-exp="senior">
+                                Senior Level
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Cards Grid -->
+            <div id="jobsContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Job Card 1: Senior Frontend Developer -->
+                <div class="job-card card-hover rounded-xl p-6" data-type="fulltime" data-exp="senior">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="company-logo w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" class="w-full h-full object-contain">
+                        </div>
+                        <button class="btn-save p-2 rounded-lg" onclick="saveJob(1)">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-2">Senior Frontend Developer</h3>
+                    <div class="text-gray-400 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        </svg>
+                        Facebook • Menlo Park, CA
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="salary-badge px-3 py-1 rounded-full text-sm">
+                            $180K - $250K
+                        </span>
+                        <span class="match-percentage px-3 py-1 rounded-full text-sm font-medium">
+                            92% Match
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mb-4">
+                        We're looking for an experienced Frontend Developer to join our team and help build the next generation of Facebook products used by billions globally...
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">React</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">TypeScript</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">GraphQL</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">+3</span>
+                    </div>
+                    
+                    <button onclick="applyJob(1)" class="btn-apply w-full px-4 py-2 rounded-lg font-medium">
+                        Apply Now
+                    </button>
+                </div>
+
+                <!-- Job Card 2: Backend Engineer -->
+                <div class="job-card card-hover rounded-xl p-6" data-type="remote" data-exp="mid">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="company-logo w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png" alt="Google" class="w-full h-full object-contain">
+                        </div>
+                        <button class="btn-save p-2 rounded-lg" onclick="saveJob(2)">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-2">Backend Engineer</h3>
+                    <div class="text-gray-400 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9 9m9-9H3m9 9v9m0-9v9m0 9c0 1.657-3.343 3-7.5 3S7.5 20.657 7.5 19m0 0c0-1.657 3.343-3 7.5-3s7.5 1.343 7.5 3"></path>
+                        </svg>
+                        Google • Remote
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="salary-badge px-3 py-1 rounded-full text-sm">
+                            $160K - $220K
+                        </span>
+                        <span class="match-percentage px-3 py-1 rounded-full text-sm font-medium">
+                            88% Match
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mb-4">
+                        Join our team to build scalable backend systems that power Google's products used by billions of users worldwide. Work on cutting-edge cloud infrastructure...
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Python</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Go</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Kubernetes</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">+4</span>
+                    </div>
+                    
+                    <button onclick="applyJob(2)" class="btn-apply w-full px-4 py-2 rounded-lg font-medium">
+                        Apply Now
+                    </button>
+                </div>
+
+                <!-- Job Card 3: Product Manager -->
+                <div class="job-card card-hover rounded-xl p-6" data-type="fulltime" data-exp="mid">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="company-logo w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1200px-Amazon_logo.svg.png" alt="Amazon" class="w-full h-full object-contain">
+                        </div>
+                        <button class="btn-save p-2 rounded-lg" onclick="saveJob(3)">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-2">Product Manager</h3>
+                    <div class="text-gray-400 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        </svg>
+                        Amazon • Seattle, WA
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="salary-badge px-3 py-1 rounded-full text-sm">
+                            $150K - $200K
+                        </span>
+                        <span class="match-percentage px-3 py-1 rounded-full text-sm font-medium">
+                            85% Match
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mb-4">
+                        Lead product strategy and development for Amazon Web Services, working with cross-functional teams to deliver innovative cloud solutions...
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">AWS</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Analytics</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Strategy</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">+2</span>
+                    </div>
+                    
+                    <button onclick="applyJob(3)" class="btn-apply w-full px-4 py-2 rounded-lg font-medium">
+                        Apply Now
+                    </button>
+                </div>
+
+                <!-- Job Card 4: Data Scientist -->
+                <div class="job-card card-hover rounded-xl p-6" data-type="remote" data-exp="mid">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="company-logo w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/1200px-Netflix_2015_logo.svg.png" alt="Netflix" class="w-full h-full object-contain">
+                        </div>
+                        <button class="btn-save p-2 rounded-lg" onclick="saveJob(4)">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-2">Data Scientist</h3>
+                    <div class="text-gray-400 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        </svg>
+                        Netflix • Los Gatos, CA
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="salary-badge px-3 py-1 rounded-full text-sm">
+                            $170K - $240K
+                        </span>
+                        <span class="match-percentage px-3 py-1 rounded-full text-sm font-medium">
+                            90% Match
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mb-4">
+                        Apply machine learning and statistical analysis to improve content recommendations and user experience for 230+ million subscribers...
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Python</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">ML</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">SQL</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">+3</span>
+                    </div>
+                    
+                    <button onclick="applyJob(4)" class="btn-apply w-full px-4 py-2 rounded-lg font-medium">
+                        Apply Now
+                    </button>
+                </div>
+
+                <!-- Job Card 5: UX Designer -->
+                <div class="job-card card-hover rounded-xl p-6" data-type="fulltime" data-exp="entry">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="company-logo w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1200px-Spotify_logo_without_text.svg.png" alt="Spotify" class="w-full h-full object-contain">
+                        </div>
+                        <button class="btn-save p-2 rounded-lg" onclick="saveJob(5)">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-2">UX Designer</h3>
+                    <div class="text-gray-400 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        </svg>
+                        Spotify • New York, NY
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="salary-badge px-3 py-1 rounded-full text-sm">
+                            $120K - $160K
+                        </span>
+                        <span class="match-percentage px-3 py-1 rounded-full text-sm font-medium">
+                            78% Match
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mb-4">
+                        Design intuitive and engaging user experiences for music streaming platform used by millions globally. Shape the future of music discovery...
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Figma</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Prototyping</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">User Research</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">+2</span>
+                    </div>
+                    
+                    <button onclick="applyJob(5)" class="btn-apply w-full px-4 py-2 rounded-lg font-medium">
+                        Apply Now
+                    </button>
+                </div>
+
+                <!-- Job Card 6: DevOps Engineer -->
+                <div class="job-card card-hover rounded-xl p-6" data-type="remote" data-exp="senior">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="company-logo w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/1200px-Microsoft_logo_%282012%29.svg.png" alt="Microsoft" class="w-full h-full object-contain">
+                        </div>
+                        <button class="btn-save p-2 rounded-lg" onclick="saveJob(6)">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-2">DevOps Engineer</h3>
+                    <div class="text-gray-400 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9 9m9-9H3m9 9v9m0-9v9m0 9c0 1.657-3.343 3-7.5 3S7.5 20.657 7.5 19m0 0c0-1.657 3.343-3 7.5-3s7.5 1.343 7.5 3"></path>
+                        </svg>
+                        Microsoft • Remote
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="salary-badge px-3 py-1 rounded-full text-sm">
+                            $165K - $210K
+                        </span>
+                        <span class="match-percentage px-3 py-1 rounded-full text-sm font-medium">
+                            87% Match
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mb-4">
+                        Build and maintain CI/CD pipelines, infrastructure automation, and cloud deployments for Microsoft Azure and enterprise solutions...
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Azure</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Docker</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">Terraform</span>
+                        <span class="px-2 py-1 bg-gray-700 rounded text-xs">+3</span>
+                    </div>
+                    
+                    <button onclick="applyJob(6)" class="btn-apply w-full px-4 py-2 rounded-lg font-medium">
+                        Apply Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Modal -->
+    <div id="applicationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 id="modalTitle" class="text-2xl font-bold mb-4"></h3>
+            <p id="modalMessage" class="text-gray-400 mb-6"></p>
+            <div class="flex space-x-3">
+                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors">
+                    Cancel
+                </button>
+                <button id="modalActionBtn" class="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter functionality
+        const jobs = document.querySelectorAll('.job-card');
+        const typeFilters = document.querySelectorAll('[data-filter]');
+        const expFilters = document.querySelectorAll('[data-exp]');
+        const jobSearch = document.getElementById('jobSearch');
+
+        function filterJobs() {
+            const selectedType = document.querySelector('[data-filter].active')?.dataset.filter || 'all';
+            const selectedExp = document.querySelector('[data-exp].active')?.dataset.exp || 'all';
+            const searchTerm = jobSearch.value.toLowerCase();
+            
+            let visibleCount = 0;
+            
+            jobs.forEach(job => {
+                const jobType = job.dataset.type;
+                const jobExp = job.dataset.exp;
+                const jobText = job.textContent.toLowerCase();
+                
+                const typeMatch = selectedType === 'all' || jobType === selectedType;
+                const expMatch = selectedExp === 'all' || jobExp === selectedExp;
+                const searchMatch = !searchTerm || jobText.includes(searchTerm);
+                
+                if (typeMatch && expMatch && searchMatch) {
+                    job.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    job.style.display = 'none';
+                }
+            });
+        }
+
+        // Type filter clicks
+        typeFilters.forEach(filter => {
+            filter.addEventListener('click', () => {
+                typeFilters.forEach(f => f.classList.remove('active'));
+                filter.classList.add('active');
+                filterJobs();
+            });
+        });
+
+        // Experience filter clicks
+        expFilters.forEach(filter => {
+            filter.addEventListener('click', () => {
+                expFilters.forEach(f => f.classList.remove('active'));
+                filter.classList.add('active');
+                filterJobs();
+            });
+        });
+
+        // Search input
+        jobSearch.addEventListener('input', filterJobs);
+
+        // Modal functions
+        function applyJob(jobId) {
+            const modal = document.getElementById('applicationModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalActionBtn = document.getElementById('modalActionBtn');
+            
+            modalTitle.textContent = 'Apply for Position';
+            modalMessage.textContent = 'Your resume will be automatically submitted with your application. The employer will see your AI-optimized resume and match score.';
+            modalActionBtn.textContent = 'Submit Application';
+            modalActionBtn.onclick = () => {
+                alert('Application submitted for job ' + jobId);
+                closeModal();
+            };
+            
+            modal.classList.remove('hidden');
+        }
+
+        function saveJob(jobId) {
+            const modal = document.getElementById('applicationModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalActionBtn = document.getElementById('modalActionBtn');
+            
+            modalTitle.textContent = 'Save Job';
+            modalMessage.textContent = 'This job will be saved to your profile for easy access later.';
+            modalActionBtn.textContent = 'Save Job';
+            modalActionBtn.onclick = () => {
+                alert('Job ' + jobId + ' saved to your profile');
+                closeModal();
+            };
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('applicationModal').classList.add('hidden');
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal on background click
+        document.getElementById('applicationModal').addEventListener('click', (e) => {
+            if (e.target.id === 'applicationModal') {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        filterJobs();
+    </script>
+</body>
+</html>
