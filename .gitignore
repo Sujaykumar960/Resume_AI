@@ -31,9 +31,9 @@ MANIFEST
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-/media
-/static
-/staticfiles
+/backend/media
+/backend/static
+/backend/staticfiles
 
 # IDE
 .vscode/

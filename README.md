@@ -15,7 +15,7 @@ source venv/bin/activate
 
 ### 2. Install dependencies
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ### 3. Configure environment
@@ -31,12 +31,12 @@ Get a free key at: https://aistudio.google.com/app/apikey
 
 ### 4. Run migrations
 ```bash
-python manage.py migrate
+python backend/manage.py migrate
 ```
 
 ### 5. Start the server
 ```bash
-python manage.py runserver
+python backend/manage.py runserver
 ```
 
 Open http://localhost:8000 — done! 🚀
@@ -75,41 +75,17 @@ Open http://localhost:8000 — done! 🚀
 ## Project Structure
 ```
 ResumeAI/
-├── manage.py
-├── resumeai/           # Django project config
-│   ├── __init__.py
-│   ├── settings.py
-│   ├── urls.py
-│   ├── asgi.py
-│   └── wsgi.py
-├── accounts/           # Authentication app
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py      # CustomUser model
-│   ├── views.py       # Login, signup, logout
-│   ├── forms.py       # Authentication forms
-│   ├── urls.py
-│   └── templates/
-│       └── accounts/
-│           ├── login.html
-│           └── signup.html
-├── core/              # Main resume analysis app
-│   ├── models.py      # ResumeAnalysis, ChatMessage
-│   ├── views.py       # analyze, results, chat endpoints
-│   ├── utils.py       # Gemini helper functions
-│   ├── forms.py       # ResumeUploadForm
-│   ├── urls.py
-│   └── templates/
-│       ├── base.html
-│       ├── index.html
-│       └── results.html
-├── templates/         # Global templates
-│   ├── home.html      # Landing page
-│   └── dashboard.html # Main dashboard
-├── media/            # User uploads
-├── static/           # Static files
-├── requirements.txt
+├── backend/            # Django backend
+│   ├── manage.py
+│   ├── resumeai/       # Django project config
+│   ├── accounts/       # Authentication app
+│   ├── core/           # Resume analysis app
+│   ├── media/          # User uploads
+│   ├── staticfiles/    # Collected static output
+│   └── requirements.txt
+├── frontend/           # Frontend presentation files
+│   ├── templates/      # HTML templates
+│   └── static/         # CSS, JavaScript, and images
 ├── .env.example
 └── README.md
 ```
@@ -145,6 +121,8 @@ For a manual Render web service, use:
 Build Command: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
 Start Command: gunicorn resumeai.wsgi:application
 ```
+
+The Render service uses `backend` as its root directory, so these commands run from that folder.
 
 The production settings use `DEBUG=False`, PostgreSQL through `DATABASE_URL`, WhiteNoise for static files, and Render's `RENDER_EXTERNAL_HOSTNAME` automatically.
 

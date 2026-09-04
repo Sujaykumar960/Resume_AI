@@ -2,6 +2,7 @@ services:
   - type: web
     name: resumeai
     runtime: python
+    rootDir: backend
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
     startCommand: gunicorn resumeai.wsgi:application
     envVars:
