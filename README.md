@@ -6,7 +6,7 @@ A stunning, production-grade Django 5 web app with user authentication powered b
 
 ### 1. Create & activate virtual environment
 ```bash
-python -m venv venv
+python -m venv 
 # Windows:
 venv\Scripts\activate
 # macOS/Linux:
