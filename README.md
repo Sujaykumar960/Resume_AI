@@ -1,6 +1,6 @@
 # ResumeAI — AI-Powered Resume Analyzer & Career Coach
 
-A stunning, production-grade Django 5 web app with user authentication powered by Google Gemini AI.
+A Django 5 web app with user authentication and AI-powered resume analysis.
 
 ## Quick Start
 
@@ -23,11 +23,11 @@ pip install -r backend/requirements.txt
 copy .env.example .env   # Windows
 cp .env.example .env     # macOS/Linux
 ```
-Edit `.env` and add your Gemini API key:
+Edit `.env` and add an OpenRouter or Groq API key:
 ```
-GEMINI_API_KEY=your-key-here
+OPENROUTER_API_KEY=your-key-here
 ```
-Get a free key at: https://aistudio.google.com/app/apikey
+Get an OpenRouter key at: https://openrouter.ai/keys
 
 ### 4. Run migrations
 ```bash
@@ -54,7 +54,7 @@ Open http://localhost:8000 — done! 🚀
 
 ### Core Features
 - 📄 PDF resume upload with drag & drop
-- 🤖 Gemini AI analysis (ATS score, job matches, skill gaps)
+- 🤖 AI analysis (ATS score, job matches, skill gaps)
 - 🗺️ 3-year career roadmap
 - 💬 AI career coach chatbot with resume context
 - 🌙 Stunning dark theme with neon green accents
@@ -94,7 +94,7 @@ ResumeAI/
 
 - **Backend**: Django 5.x + SQLite (development)
 - **Frontend**: Pure vanilla HTML5 + Tailwind CSS + vanilla JavaScript
-- **AI**: Google Gemini API (backend only)
+- **AI**: OpenRouter or Groq API (backend only)
 - **Database**: SQLite (development), PostgreSQL ready for production
 - **Authentication**: Django's built-in auth system with custom user model
 
@@ -128,14 +128,14 @@ The production settings use `DEBUG=False`, PostgreSQL through `DATABASE_URL`, Wh
 
 ## API Usage
 
-The app uses Google Gemini 1.5 API for:
+The app uses an OpenAI-compatible provider for:
 - Resume content analysis
 - ATS scoring
 - Job matching
 - Career roadmap generation
 - Chat-based coaching
 
-Rate limits may apply based on your Gemini API plan.
+Rate limits may apply based on your selected provider plan.
 
 ## Contributing
 

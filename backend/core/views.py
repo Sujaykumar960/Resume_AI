@@ -1,8 +1,7 @@
 import json
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
@@ -51,7 +50,7 @@ def analyze(request):
     except Exception as e:
         msg = str(e)
         if '429' in msg or 'RESOURCE_EXHAUSTED' in msg:
-            return JsonResponse({'error': 'Gemini API quota exceeded. Please wait a minute and try again, or check your plan at https://ai.dev/rate-limit'}, status=429)
+            return JsonResponse({'error': 'AI provider quota exceeded. Please wait a minute and try again, or check your provider plan.'}, status=429)
         return JsonResponse({'error': msg}, status=500)
 
     analysis = ResumeAnalysis.objects.create(
